@@ -1,8 +1,26 @@
 # SmartHealth AI
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-46e0c4.svg)](LICENSE)
+[![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](requirements.txt)
+[![PyTorch](https://img.shields.io/badge/ML-PyTorch-EE4C2C?logo=pytorch&logoColor=white)](ml/)
+[![Flask](https://img.shields.io/badge/Backend-Flask-000000?logo=flask&logoColor=white)](backend/)
+[![ESP32](https://img.shields.io/badge/Firmware-ESP32-E7352C?logo=espressif&logoColor=white)](firmware/esp32/)
+[![Status](https://img.shields.io/badge/status-software%20complete%2C%20hardware%20pending-f5b84a.svg)](docs/PLAN.md)
+
 Deep learning-based wearable healthcare monitoring system for **Activity, Fall, Tremor, and Vital Sign** monitoring.
 
 > **Academic prototype disclaimer:** This is a 2-person student project for a Healthcare Analytics course. It performs **monitoring / detection / classification** on a low-cost prototype. It is **not** a certified medical device and does **not** diagnose disease, replace clinical judgment, or provide clinically certified vital sign or fall-detection measurements. See [docs/AUDIT.md](docs/AUDIT.md) for the full scope-limits checklist.
+
+## Contents
+
+- [What it does](#what-it-does)
+- [Dashboard](#dashboard)
+- [Architecture](#architecture)
+- [Repository structure](#repository-structure)
+- [Tech stack](#tech-stack)
+- [Project status](#project-status)
+- [Getting started](#getting-started)
+- [License](#license)
 
 ## What it does
 
@@ -13,6 +31,30 @@ A wearable (ESP32 + MPU6050 + MAX30102) streams motion and physiological data ov
 - Tremor-like abnormal movement
 
 Heart rate and estimated SpO₂ from the MAX30102 are captured as a separate, timestamp-synchronized stream. Results are stored in SQLite and shown on a real-time web dashboard, with a local buzzer and dashboard alert on a confirmed fall.
+
+## Dashboard
+
+Mobile-first, config-driven ([`dashboard/static/config.js`](dashboard/static/config.js)) live monitoring UI — the hero waveform is not decorative, it's the actual acceleration-magnitude signal the model classifies, rendered like an instrument readout. Screenshots below are real, taken against the live backend with the actual trained model, not mockups.
+
+<table>
+<tr>
+<td width="70%" valign="top">
+
+**Desktop, calm state**
+<img src="docs/screenshots/dashboard-desktop.png" alt="SmartHealth AI dashboard showing a Walking activity, 82 bpm heart rate, 97% SpO2, live acceleration waveform, and AI confidence bars">
+
+**Desktop, confirmed fall alert**
+<img src="docs/screenshots/dashboard-alert.png" alt="SmartHealth AI dashboard showing an active FALL DETECTED alert banner, red status LED, and the alert logged in the activity log">
+
+</td>
+<td width="30%" valign="top">
+
+**Mobile**
+<img src="docs/screenshots/dashboard-mobile.png" alt="SmartHealth AI dashboard on a phone-sized viewport, single-column layout">
+
+</td>
+</tr>
+</table>
 
 ## Architecture
 
@@ -51,25 +93,28 @@ Full technical detail (data flow, model specs, API, DB schema, config) lives in 
 
 ```
 smarthealth-ai/
-├── firmware/esp32/     # ESP32 C/C++ firmware (sensors, Wi-Fi, buzzer)
-├── backend/            # Flask API: routes, services, database access
-│   ├── routes/
-│   ├── services/
-│   └── database/
-├── ml/                 # All machine learning code
-│   ├── datasets/       # Public + custom dataset loaders and adapters
-│   ├── preprocessing/  # Filtering, normalization, timestamp alignment
-│   ├── segmentation/   # Sliding-window segmentation (train + inference)
-│   ├── cnn/            # 1D CNN model definition
-│   ├── lstm/           # LSTM model definition (comparison)
-│   ├── training/       # Training scripts, experiment configs
-│   ├── evaluation/     # Metrics, confusion matrices, model comparison
-│   └── inference/      # Real-time rolling-window inference
-├── dashboard/          # Web dashboard (HTML/JS or React + Chart.js)
-├── models/             # Trained model artifacts (not real sensor data)
-├── data/               # Raw/processed datasets (gitignored beyond samples)
-├── tests/              # Hardware, backend, ML, and system tests
-├── docs/               # Plan, documentation, audit, architecture notes
+├── firmware/esp32/       # ESP32 C/C++ firmware (PlatformIO)
+│   └── src/               # main.cpp (live streaming), logger_main.cpp (Phase 2 CSV logger)
+├── backend/              # Flask API
+│   ├── routes/             # sensor ingestion + read endpoints
+│   ├── services/            # validation, decision engine, live inference state
+│   └── database/            # SQLite schema + access
+├── ml/                   # All machine learning code
+│   ├── datasets/            # BITS-2 dataset adapter + label mapping
+│   ├── preprocessing/       # Shared resampling + normalization (train == inference)
+│   ├── segmentation/        # Event-triggered live segmentation
+│   ├── cnn/                 # 1D CNN model definition (deployed)
+│   ├── lstm/                # LSTM model definition (comparison)
+│   ├── training/            # Training + model-selection sweep
+│   ├── evaluation/          # Threshold derivation from real data
+│   └── inference/           # Real-time inference wrapper
+├── dashboard/             # Mobile-first live monitoring UI (vanilla HTML/CSS/JS)
+│   └── static/               # config.js, app.js, style.css
+├── models/                # Trained model artifacts (gitignored)
+├── data/                  # Datasets + SQLite DB (gitignored)
+├── tests/                 # Simulated-device sender + end-to-end demo
+├── docs/                  # Plan, technical docs, audit checklist, screenshots
+├── RUN.md                # Every command to run backend/frontend/models
 ├── requirements.txt
 └── README.md
 ```
@@ -78,12 +123,11 @@ smarthealth-ai/
 
 | Layer          | Choice                                  |
 |----------------|------------------------------------------|
-| Embedded       | ESP32, Arduino IDE / PlatformIO, C/C++   |
+| Embedded       | ESP32, PlatformIO, C/C++                 |
 | Sensors        | MPU6050 (IMU), MAX30102 (HR/SpO₂)        |
 | ML             | Python, NumPy, Pandas, Scikit-learn, PyTorch |
-| Backend        | Flask                                    |
-| Dashboard      | HTML/CSS/JS + Chart.js (or React)        |
-| Database       | SQLite                                   |
+| Backend        | Flask, SQLite                            |
+| Dashboard      | Vanilla HTML/CSS/JS, hand-drawn Canvas traces (no chart library) |
 
 ## Project status
 
@@ -97,34 +141,11 @@ Trained on the [BITS-2 dataset](https://doi.org/10.5281/zenodo.10013090) (same M
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+python -m backend.app   # http://localhost:5000
 ```
 
-**Train the models** (downloads nothing itself — see `ml/datasets/bits2_adapter.py` for the BITS-2 dataset source; place it at `data/raw/bits2/Dataset/`):
-
-```bash
-python -m ml.training.train                 # trains CNN + LSTM, saves models/deployed_model.pt
-python -m ml.evaluation.threshold_analysis   # derives Phase 8 decision thresholds
-```
-
-**Run the backend + dashboard:**
-
-```bash
-python -m backend.app                        # serves the API and dashboard at http://localhost:5000
-```
-
-**Simulate a device** (no ESP32 hardware needed):
-
-```bash
-python -m tests.fake_esp32_sender --trial data/raw/bits2/Dataset/fall/user2/user2_fall1.csv
-python -m tests.e2e_demo                      # full Phase 9 demo across held-out test subjects
-```
-
-**Firmware** (compiles against the real ESP32 toolchain; see [firmware/esp32/README.md](firmware/esp32/README.md) for build/flash steps and hardware-verification status):
-
-```bash
-cd firmware/esp32 && pio run
-```
+**Full setup, model training, and verification commands (all tested) are in [RUN.md](RUN.md)** — backend, frontend, model training/accuracy, firmware compile-checks, and a one-shot "everything at once" section.
 
 ## License
 
-Academic project — license to be decided by the team.
+[MIT](LICENSE) — see the LICENSE file for the full text.
