@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+
+# Environment / secrets
+.env
+*.local
+
+# Data & model artifacts (large/binary, not source)
+data/*
+!data/.gitkeep
+models/*
+!models/.gitkeep
+
+# Node / dashboard (if React is chosen)
+node_modules/
+dist/
+build/
+
+# Arduino / PlatformIO
+.pio/
+*.hex
+*.bin
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Database
+*.db
+*.sqlite3
