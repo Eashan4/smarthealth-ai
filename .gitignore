@@ -24,6 +24,7 @@ build/
 .pio/
 *.hex
 *.bin
+firmware/esp32/src/secrets.h
 
 # OS / editor
 .DS_Store
