@@ -2,76 +2,127 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartHealth AI Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SmartHealth AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head>
 <body>
-<header>
-  <h1>SmartHealth AI</h1>
-  <p class="subtitle">Monitoring / detection / classification prototype &mdash; not a certified medical device</p>
-  <div class="device-picker">
-    <label for="device-id">Device</label>
-    <input id="device-id" type="text" placeholder="wearable_01" value="wearable_01">
+
+<div class="scanlines" aria-hidden="true"></div>
+
+<div class="frame">
+
+  <header class="statusbar">
+    <div class="statusbar-left">
+      <span class="led" id="conn-led" data-state="live"></span>
+      <input id="device-input" class="device-input mono" type="text" aria-label="Device ID" spellcheck="false">
+    </div>
+    <div class="statusbar-right">
+      <span class="mono dim" id="clock">--:--:--</span>
+    </div>
+  </header>
+
+  <div id="alert-rail" class="alert-rail hidden" role="alert">
+    <span class="alert-rail-text" id="alert-rail-text"></span>
   </div>
-</header>
 
-<section id="alert-banner" class="alert-banner hidden">
-  <span id="alert-text"></span>
-</section>
+  <main class="stack">
 
-<main>
-  <section class="cards">
-    <div class="card">
-      <h2>Heart Rate</h2>
-      <p class="metric"><span id="hr-value">--</span><span class="unit">bpm</span></p>
-    </div>
-    <div class="card">
-      <h2>Estimated SpO&#8322;</h2>
-      <p class="metric"><span id="spo2-value">--</span><span class="unit">%</span></p>
-    </div>
-    <div class="card">
-      <h2>Current Activity</h2>
-      <p class="metric"><span id="activity-value">--</span></p>
-      <p class="sub" id="activity-confidence"></p>
-    </div>
-    <div class="card">
-      <h2>Fall Status</h2>
-      <p class="metric" id="fall-status">No fall</p>
-      <p class="sub" id="fall-detail"></p>
-    </div>
-    <div class="card">
-      <h2>Tremor Status</h2>
-      <p class="metric">Not available</p>
-      <p class="sub">No tremor-labeled data in v1 training set (see docs/DOCUMENTATION.md sec 16)</p>
-    </div>
-  </section>
+    <section class="panel hero" data-card="now">
+      <div class="hero-top">
+        <p class="eyebrow">Current activity</p>
+        <p class="hero-word" id="activity-word">&mdash;</p>
+        <p class="hero-sub"><span class="mono" id="activity-confidence">--</span> confidence</p>
+      </div>
+      <canvas id="wave-canvas" class="wave-canvas" aria-label="Live motion signal"></canvas>
+      <p class="wave-caption dim">Live acceleration magnitude &mdash; the actual signal the model classifies</p>
+    </section>
 
-  <section class="probabilities">
-    <h2>Per-class probability</h2>
-    <div id="prob-bars"></div>
-  </section>
+    <div class="columns">
+      <div class="col-left">
 
-  <section class="charts">
-    <div class="chart-box"><h2>Heart rate</h2><canvas id="hr-chart"></canvas></div>
-    <div class="chart-box"><h2>SpO&#8322;</h2><canvas id="spo2-chart"></canvas></div>
-    <div class="chart-box"><h2>Acceleration magnitude</h2><canvas id="accel-chart"></canvas></div>
-    <div class="chart-box"><h2>Activity timeline</h2><canvas id="activity-chart"></canvas></div>
-  </section>
+        <div class="grid-2">
+          <section class="panel vital" data-card="hr">
+            <div class="vital-head">
+              <p class="eyebrow">Heart rate</p>
+              <span class="led" id="hr-led" data-state="idle"></span>
+            </div>
+            <p class="vital-value"><span class="mono" id="hr-value">--</span><span class="vital-unit">bpm</span></p>
+            <canvas id="hr-spark" class="spark-canvas"></canvas>
+          </section>
 
-  <section class="lists">
-    <div class="list-box">
-      <h2>Alerts</h2>
-      <ul id="alerts-list"><li class="empty">No active alerts</li></ul>
+          <section class="panel vital" data-card="spo2">
+            <div class="vital-head">
+              <p class="eyebrow">Est. SpO&#8322;</p>
+              <span class="led" id="spo2-led" data-state="idle"></span>
+            </div>
+            <p class="vital-value"><span class="mono" id="spo2-value">--</span><span class="vital-unit">%</span></p>
+            <canvas id="spo2-spark" class="spark-canvas"></canvas>
+          </section>
+        </div>
+
+        <section class="panel status-strip">
+          <div class="status-cell" data-card="fall">
+            <span class="led" id="fall-led" data-state="idle"></span>
+            <div>
+              <p class="status-label">Fall</p>
+              <p class="status-value" id="fall-value">Clear</p>
+            </div>
+          </div>
+          <div class="status-divider" aria-hidden="true"></div>
+          <div class="status-cell" data-card="tremor">
+            <span class="led" id="tremor-led" data-state="unavailable"></span>
+            <div>
+              <p class="status-label">Tremor</p>
+              <p class="status-value">Not available</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <div class="col-right">
+
+        <section class="panel">
+          <p class="eyebrow">AI confidence</p>
+          <div id="prob-meters" class="meters"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <p class="eyebrow">Activity timeline</p>
+            <p class="dim mono small">most recent &rarr;</p>
+          </div>
+          <div id="timeline" class="timeline"></div>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">Alerts</p>
+          <ul id="alerts-list" class="log-list">
+            <li class="log-empty">No active alerts</li>
+          </ul>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">Activity log</p>
+          <ul id="history-list" class="log-list mono"></ul>
+        </section>
+
+      </div>
     </div>
-    <div class="list-box">
-      <h2>Activity history</h2>
-      <ul id="history-list"></ul>
-    </div>
-  </section>
-</main>
 
+  </main>
+
+  <footer class="footer">
+    <p>Monitoring / detection / classification prototype &mdash; not a certified medical device.</p>
+  </footer>
+
+</div>
+
+<script src="/static/config.js"></script>
 <script src="/static/app.js"></script>
 </body>
 </html>
