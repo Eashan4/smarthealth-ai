@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHealth AI Dashboard</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+<header>
+  <h1>SmartHealth AI</h1>
+  <p class="subtitle">Monitoring / detection / classification prototype &mdash; not a certified medical device</p>
+  <div class="device-picker">
+    <label for="device-id">Device</label>
+    <input id="device-id" type="text" placeholder="wearable_01" value="wearable_01">
+  </div>
+</header>
+
+<section id="alert-banner" class="alert-banner hidden">
+  <span id="alert-text"></span>
+</section>
+
+<main>
+  <section class="cards">
+    <div class="card">
+      <h2>Heart Rate</h2>
+      <p class="metric"><span id="hr-value">--</span><span class="unit">bpm</span></p>
+    </div>
+    <div class="card">
+      <h2>Estimated SpO&#8322;</h2>
+      <p class="metric"><span id="spo2-value">--</span><span class="unit">%</span></p>
+    </div>
+    <div class="card">
+      <h2>Current Activity</h2>
+      <p class="metric"><span id="activity-value">--</span></p>
+      <p class="sub" id="activity-confidence"></p>
+    </div>
+    <div class="card">
+      <h2>Fall Status</h2>
+      <p class="metric" id="fall-status">No fall</p>
+      <p class="sub" id="fall-detail"></p>
+    </div>
+    <div class="card">
+      <h2>Tremor Status</h2>
+      <p class="metric">Not available</p>
+      <p class="sub">No tremor-labeled data in v1 training set (see docs/DOCUMENTATION.md sec 16)</p>
+    </div>
+  </section>
+
+  <section class="probabilities">
+    <h2>Per-class probability</h2>
+    <div id="prob-bars"></div>
+  </section>
+
+  <section class="charts">
+    <div class="chart-box"><h2>Heart rate</h2><canvas id="hr-chart"></canvas></div>
+    <div class="chart-box"><h2>SpO&#8322;</h2><canvas id="spo2-chart"></canvas></div>
+    <div class="chart-box"><h2>Acceleration magnitude</h2><canvas id="accel-chart"></canvas></div>
+    <div class="chart-box"><h2>Activity timeline</h2><canvas id="activity-chart"></canvas></div>
+  </section>
+
+  <section class="lists">
+    <div class="list-box">
+      <h2>Alerts</h2>
+      <ul id="alerts-list"><li class="empty">No active alerts</li></ul>
+    </div>
+    <div class="list-box">
+      <h2>Activity history</h2>
+      <ul id="history-list"></ul>
+    </div>
+  </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
