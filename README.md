@@ -87,7 +87,9 @@ smarthealth-ai/
 
 ## Project status
 
-Early scaffold — see [docs/PLAN.md](docs/PLAN.md) for the phase-by-phase development order and current phase, and [docs/AUDIT.md](docs/AUDIT.md) for the compliance/success-criteria checklist.
+**Full software stack implemented and tested (2026-08-19).** All 9 phases have code; Phase 3 (ML), 4 (LSTM comparison), 5 (backend), 6 (real-time inference), 7 (dashboard), 8 (decision engine), and 9 (end-to-end, non-hardware scenarios) are verified against real data. Phases 1, 2, and the ESP32 side of Phase 5/8 are **code-complete but hardware-unverified** — firmware compiles cleanly against the real ESP32 toolchain but has never run on a physical board (none available in this environment). See [docs/PLAN.md](docs/PLAN.md) for the per-phase status and [docs/AUDIT.md](docs/AUDIT.md) for the full checklist.
+
+Trained on the [BITS-2 dataset](https://doi.org/10.5281/zenodo.10013090) (same MPU6500+MAX30102 sensor pair as this project's hardware): the deployed 1D CNN reaches **85.1% accuracy / 89.6% fall recall** on a held-out, subject-disjoint test split, beating an LSTM comparison model on every measured axis. `Standing` and `Tremor` are not trained in v1 (no matching data in BITS-2) — see [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md) sec 5/16/21 for the full, honest accounting of what is and isn't covered.
 
 ## Getting started
 
@@ -97,7 +99,31 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Backend, firmware, and dashboard setup instructions will be added as each phase lands (see docs/PLAN.md, Phase 1 onward).
+**Train the models** (downloads nothing itself — see `ml/datasets/bits2_adapter.py` for the BITS-2 dataset source; place it at `data/raw/bits2/Dataset/`):
+
+```bash
+python -m ml.training.train                 # trains CNN + LSTM, saves models/deployed_model.pt
+python -m ml.evaluation.threshold_analysis   # derives Phase 8 decision thresholds
+```
+
+**Run the backend + dashboard:**
+
+```bash
+python -m backend.app                        # serves the API and dashboard at http://localhost:5000
+```
+
+**Simulate a device** (no ESP32 hardware needed):
+
+```bash
+python -m tests.fake_esp32_sender --trial data/raw/bits2/Dataset/fall/user2/user2_fall1.csv
+python -m tests.e2e_demo                      # full Phase 9 demo across held-out test subjects
+```
+
+**Firmware** (compiles against the real ESP32 toolchain; see [firmware/esp32/README.md](firmware/esp32/README.md) for build/flash steps and hardware-verification status):
+
+```bash
+cd firmware/esp32 && pio run
+```
 
 ## License
 
