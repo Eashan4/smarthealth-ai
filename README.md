@@ -112,7 +112,7 @@ smarthealth-ai/
 │   └── static/               # config.js, app.js, style.css
 ├── models/                # Trained model artifacts (gitignored)
 ├── data/                  # Datasets + SQLite DB (gitignored)
-├── tests/                 # Simulated-device sender + end-to-end demo
+├── tests/                 # Simulated-device sender, end-to-end demo, 5-min live demo
 ├── docs/                  # Plan, technical docs, audit checklist, screenshots
 ├── RUN.md                # Every command to run backend/frontend/models
 ├── requirements.txt
@@ -145,6 +145,13 @@ python -m backend.app   # http://localhost:5000
 ```
 
 **Full setup, model training, and verification commands (all tested) are in [RUN.md](RUN.md)** — backend, frontend, model training/accuracy, firmware compile-checks, and a one-shot "everything at once" section.
+
+Want to see it move without hardware? With the backend running and the dashboard open, [`tests/demo_5min.py`](tests/demo_5min.py) streams a real ~5-minute activity arc (rest → walk → jog → cooldown → sit → lie down → fall → recovery) from held-out BITS-2 data so every dashboard state, including a confirmed fall alert, appears live:
+
+```bash
+python -m tests.demo_5min              # real-time, ~5 minutes
+python -m tests.demo_5min --fast        # no pacing, sends as fast as possible
+```
 
 ## License
 
