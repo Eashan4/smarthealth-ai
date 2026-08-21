@@ -104,9 +104,9 @@ Both compile successfully (verified) but have not run on physical hardware — n
 
 ## 5. Everything at once (typical dev session)
 
-```bash
+
 source venv/bin/activate
 python -m backend.app &                 # terminal stays open, or run in background
 python -m tests.fake_esp32_sender --trial data/raw/bits2/Dataset/adl/user2/user2_adl1.csv --device-id wearable_01
 open http://localhost:5000              # macOS; xdg-open on Linux
-```
+
