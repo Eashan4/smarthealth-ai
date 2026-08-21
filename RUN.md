@@ -92,13 +92,13 @@ Open http://localhost:5000 in a browser (works on phone too — it's mobile-firs
 
 ## 4. Firmware — compile-check (no hardware needed)
 
-```bash
+
 pip install platformio
 cd firmware/esp32
 cp src/secrets.h.example src/secrets.h   # fill in real WiFi/backend values before flashing
 pio run                    # live-streaming build — compiles against the real ESP32 toolchain
 pio run -e esp32dev_logger # Phase 2 CSV-logger build
-```
+
 
 Both compile successfully (verified) but have not run on physical hardware — none is available in this environment. See [firmware/esp32/README.md](firmware/esp32/README.md).
 
