@@ -1,29 +1,21 @@
-// SmartHealth AI dashboard configuration.
-// Edit this file to change dashboard behavior -- nothing below should be
-// hard-coded anywhere else in dashboard/static/app.js.
+// SmartHealth AI dashboard configuration. Edit here; nothing below is hard-coded elsewhere.
 window.SMARTHEALTH_CONFIG = {
-  // Which device to show on load. The device chip in the status bar can
-  // switch devices at runtime without editing this file.
   DEFAULT_DEVICE_ID: "wearable_01",
+  API_BASE_URL: "",              // "" = same origin as the Flask app
 
-  // How often the dashboard polls the backend, in milliseconds. Lower =
-  // more live-feeling, higher server load. 2000 matches the ~1.5-3s cadence
-  // a real device is expected to produce inference results at (see
-  // docs/DOCUMENTATION.md sec 15).
-  POLL_INTERVAL_MS: 1000,
+  POLL_INTERVAL_MS: 1000,        // vitals, activity, alerts, tremor, motion
+  STALE_AFTER_MS: 15000,         // no successful poll for this long = connection LED idle
+  SPARK_POINTS: 60,              // points kept in the heart rate / SpO2 sparklines
+  EVENTS_SHOWN: 10,              // rows in the events list
 
-  // How many recent points to keep in the on-screen HR/SpO2/waveform traces
-  // and the activity history strip.
-  TRACE_HISTORY_LENGTH: 40,
-  ACTIVITY_LOG_LENGTH: 12,
+  // Tremor & motion panel (static/gyro.js)
+  IMU_POLL_INTERVAL_MS: 250,     // /api/imu, only while a data source is active
+  IMU_WINDOW_SAMPLES: 200,       // samples drawn across each trace (4 s at 50 Hz)
+  IMU_MIN_RANGE_DPS: 25,         // smallest +/- scale of the gyro strips
+  IMU_STALE_AFTER_S: 2,          // no new samples for this long = stale
+  CALIB_POLL_MS: 250,            // /api/calibration while collecting
+  CALIB_IDLE_POLL_MS: 3000,      // ... and otherwise
 
-  // Base URL for the backend API. Empty string = same origin (default,
-  // works when the dashboard is served by the same Flask app). Set to a
-  // full origin (e.g. "http://192.168.1.50:5000") to point the dashboard at
-  // a backend running elsewhere.
-  API_BASE_URL: "",
-
-  // Milliseconds of silence from the backend before the status bar shows
-  // the device as disconnected.
-  STALE_AFTER_MS: 15000,
+  // Model comparison (static/models.js)
+  LIVE_MODELS_POLL_MS: 2000,     // /api/models/live
 };

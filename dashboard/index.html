@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SmartHealth AI</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 rx=%273%27 fill=%27%23070d1a%27/%3E%3Cpath d=%27M1 8h3l2-5 3 10 2-5h4%27 fill=%27none%27 stroke=%27%2346e0c4%27 stroke-width=%271.6%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,132 +12,171 @@
 </head>
 <body>
 
-<div class="scanlines" aria-hidden="true"></div>
-
-<div class="frame">
-
-  <header class="statusbar">
-    <div class="statusbar-left">
-      <span class="led" id="conn-led" data-state="live"></span>
+<header class="statusbar">
+  <div class="sb-inner">
+    <div class="sb-id">
+      <span class="led" id="conn-led" data-state="idle" role="img" aria-label="Data connection"></span>
+      <span class="brand">SmartHealth <span class="brand-ai">AI</span></span>
       <input id="device-input" class="device-input mono" type="text" aria-label="Device ID" spellcheck="false">
     </div>
-    <div class="statusbar-right">
-      <div class="linkbar" id="linkbar">
-        <span class="led" id="link-led" data-state="idle" title="USB link"></span>
-        <select id="port-select" class="link-control mono" aria-label="USB serial port"></select>
-        <button id="port-refresh" class="link-control mono" type="button" title="Rescan ports" aria-label="Rescan ports">&#8635;</button>
-        <button id="demo-btn" class="link-control mono" type="button" aria-pressed="false">Demo</button>
-        <button id="port-btn" class="link-control link-primary mono" type="button">Connect</button>
-        <span id="port-msg" class="mono dim link-msg" role="status"></span>
-      </div>
-      <span class="mono dim" id="clock">--:--:--</span>
+    <div class="linkbar" id="linkbar">
+      <span class="led" id="link-led" data-state="idle" role="img" aria-label="USB link"></span>
+      <select id="port-select" class="ctl" aria-label="USB serial port"></select>
+      <button id="port-refresh" class="ctl" type="button" title="Rescan ports" aria-label="Rescan ports">&#8635;</button>
+      <button id="port-btn" class="ctl ctl-primary" type="button">Connect</button>
+      <button id="demo-btn" class="ctl" type="button" aria-pressed="false">Demo</button>
+      <span class="clock mono" id="clock">--:--:--</span>
     </div>
-  </header>
-
-  <div id="mode-banner" class="mode-banner" data-mode="idle" role="status"></div>
-
-  <div id="alert-rail" class="alert-rail hidden" role="alert">
-    <span class="alert-rail-text" id="alert-rail-text"></span>
   </div>
+  <p id="port-msg" class="port-msg" role="status"></p>
+</header>
 
-  <main class="stack">
+<div id="mode-banner" class="mode-banner" data-mode="idle" role="status"></div>
 
-    <section class="panel hero" data-card="now">
-      <div class="hero-top">
-        <p class="eyebrow">Current activity</p>
-        <p class="hero-word" id="activity-word">&mdash;</p>
-        <p class="hero-sub"><span class="mono" id="activity-confidence">--</span> confidence</p>
-      </div>
-      <canvas id="wave-canvas" class="wave-canvas" aria-label="Live motion signal"></canvas>
-      <p class="wave-caption dim">Live acceleration magnitude &mdash; the actual signal the model classifies</p>
-    </section>
+<div id="alert-rail" class="alert-rail hidden" role="alert">
+  <span id="alert-rail-text"></span>
+</div>
 
-    <div class="columns">
-      <div class="col-left">
+<main class="wrap">
 
-        <div class="grid-2">
-          <section class="panel vital" data-card="hr">
-            <div class="vital-head">
-              <p class="eyebrow">Heart rate</p>
-              <span class="led" id="hr-led" data-state="idle"></span>
-            </div>
-            <p class="vital-value"><span class="mono" id="hr-value">--</span><span class="vital-unit">bpm</span></p>
-            <canvas id="hr-spark" class="spark-canvas"></canvas>
-          </section>
+  <!-- 1. VITALS -->
+  <section class="sec" id="vitals" aria-labelledby="h-vitals">
+    <div class="sec-head"><h2 id="h-vitals">Vitals</h2><p class="sec-note">Updated every second while a data source is active.</p></div>
 
-          <section class="panel vital" data-card="spo2">
-            <div class="vital-head">
-              <p class="eyebrow">Est. SpO&#8322;</p>
-              <span class="led" id="spo2-led" data-state="idle"></span>
-            </div>
-            <p class="vital-value"><span class="mono" id="spo2-value">--</span><span class="vital-unit">%</span></p>
-            <canvas id="spo2-spark" class="spark-canvas"></canvas>
-          </section>
+    <div class="vitals-big">
+      <article class="card vital" id="hr-card">
+        <div class="card-head">
+          <h3>Heart rate</h3>
+          <span class="chip" id="hr-chip" data-tone="none"><span class="chip-ico" aria-hidden="true"></span><span id="hr-chip-text">No data</span></span>
         </div>
+        <p class="big"><span class="num" id="hr-value">--</span><span class="unit">bpm</span></p>
+        <canvas id="hr-spark" class="spark" aria-hidden="true"></canvas>
+        <dl class="stats">
+          <div><dt>Session min</dt><dd id="hr-min">--</dd></div>
+          <div><dt>Average</dt><dd id="hr-avg">--</dd></div>
+          <div><dt>Max</dt><dd id="hr-max">--</dd></div>
+        </dl>
+      </article>
 
-        <section class="panel status-strip">
-          <div class="status-cell" data-card="fall">
-            <span class="led" id="fall-led" data-state="idle"></span>
-            <div>
-              <p class="status-label">Fall</p>
-              <p class="status-value" id="fall-value">Clear</p>
-            </div>
-          </div>
-          <div class="status-divider" aria-hidden="true"></div>
-          <div class="status-cell" data-card="tremor">
-            <span class="led" id="tremor-led" data-state="unavailable"></span>
-            <div>
-              <p class="status-label">Tremor</p>
-              <p class="status-value" id="tremor-value">No motion data</p>
-            </div>
-          </div>
-        </section>
-
-      </div>
-
-      <div class="col-right">
-
-        <section class="panel">
-          <p class="eyebrow">AI confidence</p>
-          <div id="prob-meters" class="meters"></div>
-        </section>
-
-        <section class="panel">
-          <div class="section-head">
-            <p class="eyebrow">Activity timeline</p>
-            <p class="dim mono small">most recent &rarr;</p>
-          </div>
-          <div id="timeline" class="timeline"></div>
-        </section>
-
-        <section class="panel">
-          <p class="eyebrow">Alerts</p>
-          <ul id="alerts-list" class="log-list">
-            <li class="log-empty">No active alerts</li>
-          </ul>
-        </section>
-
-        <section class="panel">
-          <p class="eyebrow">Activity log</p>
-          <ul id="history-list" class="log-list mono"></ul>
-        </section>
-
-      </div>
+      <article class="card vital" id="spo2-card">
+        <div class="card-head">
+          <h3>Blood oxygen <span class="sub">SpO&#8322;</span></h3>
+          <span class="chip" id="spo2-chip" data-tone="none"><span class="chip-ico" aria-hidden="true"></span><span id="spo2-chip-text">No data</span></span>
+        </div>
+        <p class="big"><span class="num" id="spo2-value">--</span><span class="unit">%</span></p>
+        <canvas id="spo2-spark" class="spark" aria-hidden="true"></canvas>
+        <dl class="stats">
+          <div><dt>Session min</dt><dd id="spo2-min">--</dd></div>
+          <div><dt>Average</dt><dd id="spo2-avg">--</dd></div>
+          <div><dt>Max</dt><dd id="spo2-max">--</dd></div>
+        </dl>
+        <p class="foot-note">Estimate, not clinical.</p>
+      </article>
     </div>
 
-  </main>
+    <div class="tiles">
+      <article class="tile" id="tile-activity"><h3>Activity</h3><p class="tile-val" id="act-val">--</p><p class="tile-sub" id="act-sub">No data</p></article>
+      <article class="tile" id="tile-tremor" data-tone="none"><h3>Tremor</h3><p class="tile-val" id="tremor-val">--</p><p class="tile-sub" id="tremor-sub">No data</p></article>
+      <article class="tile" id="tile-fall" data-tone="none"><h3>Fall status</h3><p class="tile-val" id="fall-val">--</p><p class="tile-sub" id="fall-sub">No data</p></article>
+      <article class="tile" id="tile-signal" data-tone="none"><h3>Signal</h3><p class="tile-val" id="sig-val">--</p><p class="tile-sub" id="sig-sub">No data</p></article>
+    </div>
+  </section>
 
-  <footer class="footer">
-    <p>Monitoring / detection / classification prototype &mdash; not a certified medical device.</p>
-  </footer>
+  <!-- 2. TREMOR & MOTION -->
+  <section class="sec" id="motion" aria-labelledby="h-motion">
+    <div class="sec-head"><h2 id="h-motion">Tremor and motion</h2><p class="sec-note">Raw motion sensor, newest on the right.</p></div>
+    <div class="card motion">
+      <div class="m-accel">
+        <div class="trace-head"><h3>Acceleration magnitude</h3><span class="mono readout" id="accel-val">--</span></div>
+        <canvas id="accel-canvas" class="trace trace-accel" aria-label="Acceleration magnitude trace"></canvas>
+      </div>
+      <div class="m-gyro">
+        <div class="trace-head"><h3>Gyroscope</h3><span class="unit-note">deg/s</span></div>
+        <div class="strip" data-axis="gx"><span class="strip-name">X</span><canvas id="gyro-gx" aria-label="Gyroscope X trace"></canvas><span class="mono readout" id="gyro-gx-val">--</span></div>
+        <div class="strip" data-axis="gy"><span class="strip-name">Y</span><canvas id="gyro-gy" aria-label="Gyroscope Y trace"></canvas><span class="mono readout" id="gyro-gy-val">--</span></div>
+        <div class="strip" data-axis="gz"><span class="strip-name">Z</span><canvas id="gyro-gz" aria-label="Gyroscope Z trace"></canvas><span class="mono readout" id="gyro-gz-val">--</span></div>
+      </div>
+      <div class="cal" id="cal" data-state="idle">
+        <div class="ring" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="40" height="40"><circle class="ring-track" cx="20" cy="20" r="16"/><circle class="ring-fill" id="ring-fill" cx="20" cy="20" r="16"/></svg>
+          <span class="ring-label mono" id="ring-label"></span>
+        </div>
+        <div class="cal-main">
+          <div class="cal-row">
+            <button class="btn" id="cal-btn" type="button">Calibrate gyro</button>
+            <span class="chip" id="cal-chip" data-tone="none"><span class="chip-ico" aria-hidden="true"></span><span id="cal-chip-text">Not calibrated</span></span>
+            <button class="btn-link" id="cal-reset" type="button" hidden>Reset calibration</button>
+          </div>
+          <p class="cal-msg" id="cal-msg" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-</div>
+  <!-- 3. MODEL COMPARISON (offline evaluation: always visible) -->
+  <section class="sec" id="models" aria-labelledby="h-models">
+    <div class="sec-head"><h2 id="h-models">Model comparison</h2><p class="sec-note">1D-CNN is deployed on the device. The LSTM is trained on the same data for comparison.</p></div>
+    <p class="empty-note" id="m-status" role="status">Loading model results...</p>
+
+    <div id="m-body" hidden>
+      <article class="card" id="m-metrics" aria-labelledby="h-metrics">
+        <div class="card-head"><h3 id="h-metrics">Held-out test results</h3>
+          <div class="legend"><span class="key" data-m="cnn"><i></i>CNN (deployed)</span><span class="key" data-m="lstm"><i></i>LSTM (comparison)</span></div>
+        </div>
+        <div id="m-table"></div>
+      </article>
+
+      <div class="grid-2">
+        <article class="card" aria-labelledby="h-f1">
+          <div class="card-head"><h3 id="h-f1">F1 score per activity</h3>
+            <div class="legend"><span class="key"><i></i>CNN</span><span class="key"><i></i>LSTM</span></div></div>
+          <div id="m-f1" class="chart-box"></div>
+        </article>
+        <article class="card" aria-labelledby="h-data">
+          <div class="card-head"><h3 id="h-data">Dataset and caveat</h3></div>
+          <div id="m-data"></div>
+        </article>
+      </div>
+
+      <article class="card" aria-labelledby="h-cm">
+        <div class="card-head"><h3 id="h-cm">Confusion matrices</h3>
+          <div class="seg" role="group" aria-label="Matrix values">
+            <button type="button" id="cm-counts" aria-pressed="true">Counts</button>
+            <button type="button" id="cm-pct" aria-pressed="false">Row %</button>
+          </div>
+        </div>
+        <p class="sec-note">Rows are the true activity, columns what the model predicted. A perfect model fills the diagonal.</p>
+        <div class="cm-pair" id="m-cm"></div>
+      </article>
+    </div>
+
+    <article class="card" id="m-live" aria-labelledby="h-live">
+      <div class="card-head"><h3 id="h-live">Live: last motion event</h3><span class="chip" id="live-badge" data-tone="none" hidden><span class="chip-ico" aria-hidden="true"></span><span id="live-badge-text"></span></span></div>
+      <div id="live-body"><p class="empty-note">Waiting for a motion event</p></div>
+    </article>
+  </section>
+
+  <!-- 4. EVENTS -->
+  <section class="sec" id="events" aria-labelledby="h-events">
+    <div class="sec-head"><h2 id="h-events">Events</h2><p class="sec-note">Alerts and activity changes, newest first.</p></div>
+    <div class="card">
+      <div id="timeline" class="timeline" aria-hidden="true"></div>
+      <ul id="events-list" class="events"><li class="events-empty">Nothing recorded yet</li></ul>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Monitoring / detection / classification prototype - not a certified medical device.</p>
+</footer>
 
 <script src="/static/config.js"></script>
 <script src="/static/mock.js"></script>
 <script src="/static/datasource.js"></script>
 <script src="/static/app.js"></script>
-<script src="/static/tremor.js"></script>
+<script src="/static/gyro.js"></script>
+<script src="/static/models.js"></script>
 <script src="/static/serial.js"></script>
 </body>
 </html>
