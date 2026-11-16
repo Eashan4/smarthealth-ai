@@ -103,7 +103,32 @@ body {
 .device-input:hover { border-bottom-color: var(--line); }
 .device-input:focus { outline: none; border-bottom-color: var(--teal); }
 
-.statusbar-right { font-size: 0.78rem; }
+.statusbar-right { font-size: 0.78rem; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* USB port selector */
+.linkbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.link-control {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  padding: 5px 9px;
+  min-height: 30px;
+  max-width: 210px;
+}
+button.link-control { cursor: pointer; }
+.link-control:hover:not(:disabled) { border-color: var(--text-faint); }
+.link-control:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }
+.link-control:disabled { opacity: 0.55; cursor: default; }
+.link-primary { border-color: var(--teal-dim); color: var(--teal); }
+.link-primary[data-mode="disconnect"] { border-color: var(--coral-dim); color: var(--coral); }
+.link-msg { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 640px) {
+  .statusbar { flex-wrap: wrap; gap: 8px; }
+  .statusbar-right { width: 100%; justify-content: flex-start; }
+  .link-msg { max-width: 100%; white-space: normal; }
+}
 
 /* LED indicator -- reused everywhere state needs to read at a glance. */
 .led {
@@ -289,3 +314,16 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 @media (min-width: 1180px) {
   .frame { max-width: 1080px; }
 }
+.linkbar[hidden] { display: none; }
+
+/* Data-source banner: always says whether you are looking at nothing, simulated data, or live hardware. */
+.mode-banner {
+  padding: 8px 18px;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-dim);
+  background: var(--panel);
+}
+.mode-banner[data-mode="demo"] { background: var(--amber-dim); color: var(--amber); font-weight: 600; letter-spacing: 0.02em; }
+.mode-banner[data-mode="live"] { background: var(--teal-dim); color: var(--teal); }

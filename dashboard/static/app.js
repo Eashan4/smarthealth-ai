@@ -34,6 +34,11 @@ function qs(params) {
 }
 
 async function getJSON(path, params = {}) {
+  // ── Mock mode: intercept all API calls locally ──────────────────────────
+  if (window.__MOCK_ENABLED && typeof window.__mockGetJSON === "function") {
+    return window.__mockGetJSON(path, params);
+  }
+  // ── Real backend ─────────────────────────────────────────────────────────
   const res = await fetch(CFG.API_BASE_URL + path + qs(params));
   if (!res.ok) throw new Error(`${path} -> ${res.status}`);
   return res.json();
@@ -115,7 +120,9 @@ function setLed(id, state_) {
 
 function renderConnection() {
   const stale = Date.now() - state.lastSuccessAt > CFG.STALE_AFTER_MS;
-  setLed("conn-led", state.lastSuccessAt === 0 ? "idle" : stale ? "idle" : "live");
+  // Green only when a data source is active (hardware or demo); idle means nothing is feeding the dashboard.
+  const idle = window.__getMode && window.__getMode().mode === "idle";
+  setLed("conn-led", idle || state.lastSuccessAt === 0 || stale ? "idle" : "live");
 }
 
 function renderClock() {
