@@ -1,0 +1,93 @@
+{
+ "acc_leaky": 0.9777396838201519,
+ "acc_behaviour_only": 0.4931341243431593,
+ "r2": {
+  "OLS (linear)": 0.7654585541083464,
+  "Random forest": 0.7683993954987407,
+  "Gradient boosting": 0.8112021131031408
+ },
+ "r2_ols_plus_terms": 0.803436261631607,
+ "classification": {
+  "Logistic regression": {
+   "accuracy": 0.49313121743249644,
+   "macro_f1": 0.45121591745548734,
+   "within_one": 0.8588346755092373
+  },
+  "Random forest": {
+   "accuracy": 0.45949786830885836,
+   "macro_f1": 0.4142488248137699,
+   "within_one": 0.8398863098057793
+  }
+ },
+ "majority_baseline": 0.24064424443391758,
+ "importance": {
+  "FAF": 0.6189,
+  "Age": 0.362,
+  "FAVC": 0.1951,
+  "family_history": 0.1811,
+  "TUE": 0.1209,
+  "CAEC": 0.0633,
+  "MTRANS": 0.0285,
+  "FCVC": 0.0174,
+  "Gender": 0.0111,
+  "CALC": 0.0061,
+  "CH2O": 0.0032,
+  "SCC": 0.0022,
+  "NCP": 0.0013,
+  "SMOKE": -0.0
+ },
+ "pd_faf": [
+  34.16,
+  27.79,
+  25.52,
+  23.94
+ ],
+ "pd_caec": [
+  25.9,
+  29.3,
+  26.06,
+  26.05
+ ],
+ "phenotypes": [
+  {
+   "cluster": 0,
+   "n": 219,
+   "BMI": 21.49,
+   "obese_pct": 7.76,
+   "FAF": 1.26,
+   "FAVC": 0.0,
+   "TUE": 0.79,
+   "FCVC": 2.32
+  },
+  {
+   "cluster": 3,
+   "n": 126,
+   "BMI": 27.32,
+   "obese_pct": 31.75,
+   "FAF": 1.09,
+   "FAVC": 0.91,
+   "TUE": 0.91,
+   "FCVC": 2.37
+  },
+  {
+   "cluster": 2,
+   "n": 730,
+   "BMI": 28.56,
+   "obese_pct": 39.59,
+   "FAF": 1.19,
+   "FAVC": 1.0,
+   "TUE": 0.94,
+   "FCVC": 3.0
+  },
+  {
+   "cluster": 1,
+   "n": 1036,
+   "BMI": 29.83,
+   "obese_pct": 47.59,
+   "FAF": 1.18,
+   "FAVC": 1.0,
+   "TUE": 0.91,
+   "FCVC": 1.84
+  }
+ ]
+}

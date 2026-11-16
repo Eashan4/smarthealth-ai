@@ -1,0 +1,34 @@
+Loaded 410 rows from T2 output
+
+============================================================
+REDUNDANT DATA REMOVAL
+============================================================
+Redundant records: removed 30 exact duplicate rows (410 -> 380 rows)
+
+Missingness (before imputation):
+  lab_glucose            57 (15.0%)
+  lab_creatinine         57 (15.0%)
+  spo2                   47 (12.4%)
+  systolic_bp            38 (10.0%)
+  diastolic_bp           38 (10.0%)
+  temperature            30 (7.9%)
+  gender                 15 (3.9%)
+  diagnosis_code         11 (2.9%)
+
+============================================================
+MISSING DATA HANDLING
+============================================================
+Listwise deletion: removed 7 rows with both lab values missing (380 -> 373 rows)
+Mode imputation: filled 15 missing gender values with 'F'
+Mode imputation: filled 11 missing diagnosis_code values with 'I10'
+Median imputation: filled 38 missing systolic_bp values with 126.0
+Median imputation: filled 37 missing diastolic_bp values with 81.0
+Median imputation: filled 30 missing temperature values with 37.0
+Median imputation: filled 45 missing spo2 values with 97.0
+KNN imputation (k=5): filled 100 missing lab values across ['lab_glucose', 'lab_creatinine']
+
+Missingness (after imputation):
+  none
+
+Wrote final cleaned data to /Users/eashanjain/Documents/Healthcare/tutorials/unit1_ehr/outputs/t3_final_ehr.csv
+Self-check passed: no duplicate rows, zero missingness in final dataset.

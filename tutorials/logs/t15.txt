@@ -1,0 +1,36 @@
+2111 adults (synthetic); 5-fold cross-validation throughout
+
+Leakage check: class from Height + Weight alone = 0.978 accuracy (the class is defined from them);
+               class from behaviours only         = 0.493  <- the honest number
+
+BMI regression          CV R^2
+OLS (linear)             0.765
+Random forest            0.768
+Gradient boosting        0.811
+
+OLS + 'sometimes snacks' flag + 'high-calorie AND inactive' term: R^2 0.803 (closes 83% of the linear-to-non-linear gap of 0.046)
+Ceiling: the planted noise has sd 3.0 BMI units, so no model can exceed R^2 of about 0.83 on this data.
+
+7-class classification    accuracy  macro-F1  within 1 class
+Logistic regression          0.493     0.451           0.859
+Random forest                0.459     0.414           0.840
+Majority-class baseline accuracy: 0.241
+
+Permutation importance (drop in held-out R^2 when a factor is shuffled):
+  FAF             0.6189
+  Age             0.3620
+  FAVC            0.1951
+  family_history  0.1811
+  TUE             0.1209
+  CAEC            0.0633
+Partial dependence, FAF 0->3: [34.16 27.79 25.52 23.94]  |  CAEC no/Sometimes/Frequently/Always: [25.9  29.3  26.06 26.05]
+
+Behaviour phenotypes (k-means, 4 clusters, behaviours only):
+            n    BMI  obese_pct   FAF  FAVC   TUE  FCVC
+cluster                                                
+0         219  21.49       7.76  1.26  0.00  0.79  2.32
+3         126  27.32      31.75  1.09  0.91  0.91  2.37
+2         730  28.56      39.59  1.19  1.00  0.94  3.00
+1        1036  29.83      47.59  1.18  1.00  0.91  1.84
+
+Self-check passed: leakage demonstrated, non-linearity found and partly recovered by hand, phenotypes separate on BMI.

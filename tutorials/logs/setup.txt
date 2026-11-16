@@ -1,0 +1,10 @@
+Wrote 410 rows to /Users/eashanjain/Documents/Healthcare/tutorials/unit1_ehr/data/synthetic_ehr.csv
+  patient_id age  gender  ... lab_glucose lab_creatinine  length_of_stay
+0      P0173  47       M  ...       127.2           1.14               5
+1      P0138  70    MALE  ...       121.3            NaN               6
+2      P0127  81  female  ...        86.3           1.21               6
+3      P0095  25       F  ...       116.8            NaN               6
+4      P0073  38  female  ...        97.7            0.9               7
+
+[5 rows x 13 columns]
+Self-check passed: dataset has duplicates, missing values, and inconsistent formatting.

@@ -1,0 +1,22 @@
+Loaded 410 rows
+
+============================================================
+STANDARDIZATION
+============================================================
+gender: 8 raw labels -> 2 standardized labels (M/F)
+admission_date: parsed 410/410 rows from 3 mixed formats into ISO YYYY-MM-DD (0 unparseable)
+temperature: converted 42 Fahrenheit-unit readings back to Celsius
+
+============================================================
+VALIDATION
+============================================================
+spo2: 27 out-of-range values (outside [50, 100]) flagged -> set to NaN
+Total out-of-range vitals flagged: 27
+
+============================================================
+NORMALIZATION (StandardScaler)
+============================================================
+z-score normalized ['heart_rate', 'systolic_bp', 'diastolic_bp', 'temperature', 'spo2'] on 268 complete-case rows (mean~0, std~1 per column)
+
+Wrote cleaned data to /Users/eashanjain/Documents/Healthcare/tutorials/unit1_ehr/outputs/t2_cleaned_ehr.csv
+Self-check passed: gender, dates, units, ranges standardized; z-scores centered/scaled.

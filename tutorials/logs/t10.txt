@@ -1,0 +1,27 @@
+1800 notes, 6 specialties: ['cardiology', 'endocrinology', 'gastroenterology', 'neurology', 'orthopaedics', 'respiratory']
+
+model                   5-fold CV acc  test acc  test macro-F1
+Naive Bayes                     0.967     0.976          0.976
+Logistic regression             0.964     0.976          0.976
+Linear SVM                      0.974     0.980          0.980
+
+Best by CV: Linear SVM
+  cardiology        syncope, palpitations, clopidogrel, ankle swelling, ankle, infarction denies
+  endocrinology     polyuria, thirst, weight gain, gain, dapagliflozin, heat intolerance
+  gastroenterology  vomiting, heartburn, diarrhoea, weight loss, abdominal pain, abdominal
+  neurology         tremor, numbness, seizure, memory loss, memory, dementia denies
+  orthopaedics      stiffness, limping, joint pain, joint, back, back pain
+  respiratory       cough, wheeze, tightness, chest tightness, bronchitis denies, ipratropium
+
+Clustering on ALL words:      ARI -0.000, purity 0.204  (clusters follow the template plan sentence, not the disease)
+Clustering, boilerplate removed (max_df=0.10):
+Silhouette by k: 2:0.057, 3:0.074, 4:0.092, 5:0.111, 6:0.128, 7:0.138, 8:0.148, 9:0.153, 10:0.161
+Silhouette peaks at k=10; k-means with k=6 -> ARI 0.893, purity 0.955 against the real specialties
+  cluster 0 (n=304, mostly orthopaedics     ): joint, joint pain, stiffness, back pain, back
+  cluster 1 (n=270, mostly respiratory      ): cough, wheeze, production, sputum production, sputum
+  cluster 2 (n=350, mostly cardiology       ): palpitations, ankle swelling, ankle, syncope, angina denies
+  cluster 3 (n=260, mostly endocrinology    ): gain, weight gain, thirst, heat intolerance, intolerance
+  cluster 4 (n=338, mostly neurology        ): tremor, memory loss, memory, numbness, seizure
+  cluster 5 (n=278, mostly gastroenterology ): vomiting, heartburn, diarrhoea, weight loss, abdominal
+
+Self-check passed: classifiers far above chance, clustering improves once boilerplate is removed.

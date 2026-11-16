@@ -1,0 +1,58 @@
+2111 adults, age 14-57, BMI mean 28.4 (sd 7.4); synthetic data
+
+Weight class balance:
+Class
+Underweight       9.8
+Normal           24.1
+Overweight_I     12.8
+Overweight_II    13.6
+Obesity_I        20.1
+Obesity_II       13.3
+Obesity_III       6.3
+
+BMI by factor (Kruskal-Wallis, effect size eta-squared, BH-adjusted p):
+        factor  levels     H        p  eta2  range_of_means p_adj_BH
+           FAF       4 590.8 9.7e-128 0.279           10.84 1.3e-126
+          FAVC       2 226.7  3.1e-51 0.107            7.76  2.0e-50
+family_history       2 197.9  6.1e-45 0.093            6.04  2.7e-44
+           TUE       3 153.7  4.2e-34 0.072            5.10  1.4e-33
+          CAEC       4  75.7  2.5e-16 0.035            5.03  6.6e-16
+        MTRANS       5  35.2  4.3e-07 0.015            8.27  9.3e-07
+          FCVC       3  18.8  8.3e-05 0.008            2.36  1.4e-04
+        Gender       2  17.7  2.6e-05 0.008            1.44  4.8e-05
+          CALC       4  12.3  6.6e-03 0.004            1.29  9.5e-03
+           SCC       2   3.2  7.3e-02 0.001            1.12  9.6e-02
+          CH2O       3   2.4  3.0e-01 0.000            0.62  3.5e-01
+           NCP       4   3.1  3.8e-01 0.000            1.11  4.1e-01
+         SMOKE       2   0.3  5.8e-01 0.000            0.48  5.8e-01
+9 of 13 factors significant after correction
+
+Mean BMI by snacking between meals (CAEC):
+             mean  count
+CAEC                    
+no          24.04     79
+Sometimes   29.07   1669
+Frequently  26.37    304
+Always      24.94     59
+
+Association with weight class (Cramer's V):
+  FAVC            V = 0.366
+  family_history  V = 0.310
+  CAEC            V = 0.120
+  Gender          V = 0.100
+  MTRANS          V = 0.072
+  CALC            V = 0.067
+
+Spearman correlation of each factor with BMI: FAF -0.51, Age +0.42, FAVC +0.33, family_history +0.31, TUE +0.25, FCVC -0.09, SCC -0.04, CH2O -0.03, NCP +0.02, SMOKE -0.01
+Max variance inflation factor: 1.01 (below 5 means factors are not collinear)
+
+Mean BMI: physical activity (FAF 0-3) x high-calorie food
+     low-calorie diet  high-calorie food
+FAF                                     
+0               24.93              35.25
+1               21.55              28.27
+2               19.67              25.84
+3               18.31              24.01
+Gap from high-calorie food: FAF=0: +10.32, FAF=1: +6.72, FAF=2: +6.17, FAF=3: +5.70  -> the harm is largest when inactive
+
+Self-check passed: planted effects recovered and ranked, multiple-testing handled, interaction visible.

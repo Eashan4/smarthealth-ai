@@ -1,0 +1,19 @@
+Ranking: 36 diagnosis queries over 2000 notes (relevant = note names that diagnosis)
+method              P@10     MAP  nDCG@10
+random             0.028   0.025    0.024
+TF-IDF cosine      0.761   0.644    0.743
+BM25               0.850   0.677    0.827
+
+Top BM25 hit for 'chest pain atrial fibrillation':
+  26-year-old female presents with chest pain and chest pain for 10 days. Known case of stroke. Denies dizziness. Also history of atrial fibrillation. BP 171/72, HR 118. Prescribed sumatriptan 500 mg every morning. Referred for further investigation.
+
+TextRank key terms of note 0: ['fever', 'fatigue', 'thirst', 'stroke', 'female', 'alendronate']
+
+WSD over 5 ambiguous terms, 1200 contexts
+  most frequent sense        0.500
+  simplified Lesk            0.584
+  Naive Bayes (5-fold CV)    0.987
+  per term (Lesk / NB): RA 0.56/0.99, MS 0.66/1.00, PT 0.61/0.99, cold 0.50/0.99, discharge 0.59/0.97
+  e.g. 'joint swelling and morning stiffness, RA flare, methotrexate continued' -> RA:rheumatoid arthritis
+
+Self-check passed: BM25 far above random; context-aware WSD far above the most-frequent-sense baseline.

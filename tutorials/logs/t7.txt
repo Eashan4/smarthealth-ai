@@ -1,0 +1,16 @@
+1096 days of arrivals; mean 204/day, range 101-329; test = last 120 days
+
+model                                MAE   MAPE %
+seasonal naive (t-7)               37.42    17.63
+linear (calendar + Fourier)        24.50    11.64
+gradient boosting (+ lags)         27.27    12.96
+
+Best model: linear (calendar + Fourier)
+
+roster policy                      short days  shifts short  shifts idle     cost
+flat roster (train mean)                   73           835          291     3631
+flat roster (train 90th pct)               21           159         1535     2171
+forecast roster                            47           437          501     2249
+forecast + 40-patient buffer               13            75         1691     1991
+
+Self-check passed: forecast beats seasonal-naive, forecast-driven roster is cheaper than a flat one.

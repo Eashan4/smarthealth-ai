@@ -1,0 +1,73 @@
+============================================================
+SCHEMA / COMPONENTS OF THE EHR RECORD
+============================================================
+patient_id         object
+age                 int64
+gender             object
+admission_date     object
+diagnosis_code     object
+heart_rate        float64
+systolic_bp       float64
+diastolic_bp      float64
+temperature       float64
+spo2              float64
+lab_glucose       float64
+lab_creatinine    float64
+length_of_stay      int64
+dtype: object
+
+410 encounter records, 13 fields
+
+Columns map to standard EHR components:
+  patient_id, age, gender      -> patient demographics
+  admission_date, length_of_stay -> encounter/administrative
+  diagnosis_code               -> coded clinical data (ICD-10)
+  heart_rate/bp/temp/spo2      -> vitals
+  lab_glucose, lab_creatinine  -> lab results
+
+============================================================
+CODING SYSTEM: ICD-10 diagnosis breakdown
+============================================================
+  I10        Essential hypertension                        [Circulatory    ] n=84
+  E11.9      Type 2 diabetes mellitus                      [Endocrine      ] n=65
+  J45.909    Asthma, uncomplicated                         [Respiratory    ] n=50
+  I50.9      Heart failure, unspecified                    [Circulatory    ] n=36
+  K21.9      GERD without esophagitis                      [Digestive      ] n=36
+  J18.9      Pneumonia, unspecified organism               [Respiratory    ] n=30
+  F32.9      Major depressive disorder, single episode     [Mental health  ] n=29
+  N18.3      Chronic kidney disease, stage 3               [Genitourinary  ] n=26
+  M54.5      Low back pain                                 [Musculoskeletal] n=24
+  I21.9      Acute myocardial infarction                   [Circulatory    ] n=18
+
+============================================================
+BARRIERS / CHALLENGES: missingness & inconsistency
+============================================================
+  gender             15 missing (3.7%)
+  diagnosis_code     12 missing (2.9%)
+  systolic_bp        43 missing (10.5%)
+  diastolic_bp       44 missing (10.7%)
+  temperature        31 missing (7.6%)
+  spo2               22 missing (5.4%)
+  lab_glucose        60 missing (14.6%)
+  lab_creatinine     58 missing (14.1%)
+
+  30 fully duplicate rows (data re-entry / redundant records)
+  gender field has 8 inconsistent raw values: ['F', 'FEMALE', 'Female', 'M', 'MALE', 'Male', 'female', 'male']
+
+============================================================
+SUMMARY STATS: vitals & labs
+============================================================
+          age  heart_rate  ...  lab_creatinine  length_of_stay
+count  410.00      410.00  ...          352.00          410.00
+mean    54.97       77.42  ...            0.98            4.87
+std     17.33       14.39  ...            0.35            1.96
+min     -5.00       36.60  ...            0.08            1.00
+25%     43.00       68.30  ...            0.74            3.00
+50%     55.00       77.75  ...            0.98            5.00
+75%     66.00       86.32  ...            1.20            6.00
+max    137.00      118.80  ...            2.00           11.00
+
+[8 rows x 9 columns]
+
+Saved plots to /Users/eashanjain/Documents/Healthcare/tutorials/unit1_ehr/outputs
+Self-check passed: coding system mapped, barriers quantified, plots saved.

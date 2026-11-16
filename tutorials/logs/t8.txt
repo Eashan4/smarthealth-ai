@@ -1,0 +1,15 @@
+81,059 encounters, 6 service lines, 2022-2024
+
+                 admissions  bed_days  alos  revenue_m  cost_m  margin_m  margin_pct  margin_per_bed_day  cagr_pct          strategy
+service_line                                                                                                                        
+Orthopaedics          13661     48853  3.58     209.79  141.75     68.04       32.43             1392.78      3.00           PROTECT
+Cardiology            16393     79065  4.82     284.75  197.57     87.18       30.62             1102.68      5.00              GROW
+Oncology              10128     69960  6.91     328.99  252.14     76.85       23.36             1098.47      8.00              GROW
+Neurology             11362     67574  5.95     223.07  195.96     27.11       12.15              401.19      4.00            REVIEW
+General Surgery       15444     63692  4.12     248.31  222.93     25.38       10.22              398.53     -1.01            REVIEW
+Pulmonology           14071     75957  5.40     220.44  197.21     23.23       10.54              305.89      6.00  FIX COST / PRICE
+
+2024 occupancy against 420 licensed beds: 91.3% (rule of thumb: plan around 85%)
+Bed-day demand peaks in month 1 and bottoms out in month 6 (1.25x)
+
+Self-check passed: scorecard totals reconcile with the raw encounter table.

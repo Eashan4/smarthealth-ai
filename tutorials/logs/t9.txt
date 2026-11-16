@@ -1,0 +1,32 @@
+service line     trend %/yr     80% interval
+Cardiology              4.9     3.4 ..   6.4
+General Surgery        -1.0    -2.4 ..   0.4
+Neurology               4.0     2.3 ..   5.8
+Oncology                7.2     5.3 ..   9.0
+Orthopaedics            2.3     0.6 ..   4.0
+Pulmonology             6.3     4.4 ..   8.1
+
+Beds needed at 85% occupancy (licensed: 420); 2024 actual = 452
+year       low    base    high
+2025       464     472     480
+2026       477     493     510
+2027       490     515     542
+2028       503     538     576
+2029       518     563     613
+Base case first exceeds 420 beds in: 2025
+
+2027 base demand needs 515 beds; capacity supports 420.
+service line       demand  LP admits   cut %  margin/adm
+Cardiology           6641       5313    20.0        5359
+General Surgery      4945       3956    20.0        1620
+Neurology            4444       3555    20.0        2331
+Oncology             4511       3609    20.0        7541
+Orthopaedics         5020       4708     6.2        5022
+Pulmonology          5993       4794    20.0        1663
+
+Margin if every line were fully served (not possible):    123.1 M
+Margin, equal cut across lines:                            100.4 M
+Margin, LP optimal mix:                                    102.0 M  (+1.6 M)
+Shadow price of one bed-day: 1,397 per bed-day  ->  one extra bed is worth about 434 k per year
+
+Self-check passed: LP respects capacity and service floors and beats the equal-cut policy.
