@@ -12,40 +12,41 @@ def process_sample(conn, clean: dict) -> dict:
     db.insert_reading(conn, clean["device_id"], clean["timestamp"], clean["imu"],
                        clean["heart_rate"], clean["spo2"])
 
-    stream = live_state.get_stream(clean["device_id"])
+    dev = clean["device_id"]
     sample = [clean["imu"][f] for f in ("ax", "ay", "az", "gx", "gy", "gz")]
-    live_state.get_tremor(clean["device_id"]).push(sample)  # continuous, independent of event segmentation
-    prediction = stream.push_sample(sample)
+    tremor = live_state.get_tremor(dev)
+    tremor.push(sample)                                     # continuous spectral tremor (accel + gyro)
+    motion, engine = live_state.get_motion_classifier(dev), live_state.get_decision_engine()
+    motion.tremor = tremor.detected                         # a shaking hand must not read as Walking/Running
+    cnn = live_state.get_stream(dev).push_sample(sample)    # event-triggered CNN: supporting fall evidence only
+    if cnn is not None:
+        engine.note_cnn(dev, cnn)
+    result = motion.push(sample)                            # continuous rules: result ~1 Hz (at once on a fall)
 
-    response = {"status": "ok", "windowed": prediction is not None}
+    response = {"status": "ok", "windowed": result is not None}
+    if result is None:
+        return response
 
-    if prediction is not None:
-        db.insert_prediction(
-            conn, clean["device_id"], clean["timestamp"], prediction["activity"],
-            prediction["confidence"], prediction["fall_probability"],
-            prediction["tremor_probability"], prediction["model_name"],
+    decision = engine.evaluate(dev, result)
+    db.insert_prediction(conn, dev, clean["timestamp"], decision["activity"], result["confidence"],
+                         decision["fall_probability"], None, "rules+CNN")
+
+    if decision["confirmed_fall"] and not live_state.alert_already_active(dev):
+        db.insert_alert(
+            conn, dev, clean["timestamp"], "fall", "critical",
+            f"FALL DETECTED - confidence {decision['fall_probability']*100:.0f}% "
+            f"(by_rules={decision['by_rules']}, motion_verified={decision['motion_verified']})",
         )
+        live_state.set_alert_active(dev, True)
+    elif not decision["fall_active"]:
+        live_state.set_alert_active(dev, False)             # re-arm once the fall state clears
 
-        engine = live_state.get_decision_engine()
-        decision = engine.evaluate(clean["device_id"], prediction, prediction["window_raw"])
-
-        if decision["confirmed_fall"] and not live_state.alert_already_active(clean["device_id"]):
-            db.insert_alert(
-                conn, clean["device_id"], clean["timestamp"], "fall", "critical",
-                f"FALL DETECTED - confidence {prediction['fall_probability']*100:.0f}% "
-                f"(motion_verified={decision['motion_verified']})",
-            )
-            live_state.set_alert_active(clean["device_id"], True)
-        elif not decision["ai_fall_candidate"]:
-            live_state.set_alert_active(clean["device_id"], False)
-
-        response.update({
-            "activity": prediction["activity"],
-            "confidence": prediction["confidence"],
-            "fall_probability": prediction["fall_probability"],
-            "confirmed_fall": decision["confirmed_fall"],
-            "motion_verified": decision["motion_verified"],
-            "buzzer": decision["confirmed_fall"],
-        })
-
+    response.update({
+        "activity": decision["activity"],
+        "confidence": result["confidence"],
+        "fall_probability": decision["fall_probability"],
+        "confirmed_fall": decision["confirmed_fall"],
+        "motion_verified": decision["motion_verified"],
+        "buzzer": decision["confirmed_fall"],
+    })
     return response

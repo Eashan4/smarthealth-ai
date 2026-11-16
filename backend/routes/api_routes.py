@@ -102,3 +102,10 @@ def history():
         return jsonify(db.history(conn, table, limit=limit, device_id=device_id, since=_since()))
     finally:
         conn.close()
+
+
+@api_bp.route("/api/motion", methods=["GET"])
+def motion():
+    """Live rule-based activity + fall state machine + tremor (in memory): {activity, confidence, features, fall_state, tremor}."""
+    from backend.services import live_state
+    return jsonify(live_state.get_motion(request.args.get("device_id") or "wearable_01"))
