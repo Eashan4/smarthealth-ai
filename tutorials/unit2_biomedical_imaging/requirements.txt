@@ -1,0 +1,10 @@
+# Extra dependency for tutorials/unit2_biomedical_imaging only.
+# Additive to the root requirements.txt -- do not merge into it, this is
+# coursework for 21CSE428T Unit 2, not part of the SmartHealth AI app.
+# numpy / matplotlib / pillow / scipy / torch are already in the root
+# requirements.txt and the project venv; scikit-image is the only addition.
+#
+# Install once into the existing project venv:
+#   source /Users/eashanjain/Documents/Healthcare/venv/bin/activate
+#   pip install -r tutorials/unit2_biomedical_imaging/requirements.txt
+scikit-image>=0.24
