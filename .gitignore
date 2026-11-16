@@ -41,3 +41,11 @@ final/build/package-lock.json
 # raw prototype photos (cropped copies live in final/assets)
 docs/photos/
 !final/build/
+
+# Local tooling output and scratch files
+.playwright-mcp/
+/1.md
+/*.pptx
+/refrence/
+# optional helper from the pptx skill, intentionally not committed (see final/README.md)
+final/build/apply_theme.js
