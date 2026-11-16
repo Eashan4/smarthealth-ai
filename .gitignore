@@ -34,3 +34,10 @@ firmware/esp32/src/secrets.h
 # Database
 *.db
 *.sqlite3
+
+# final/build tooling
+final/build/node_modules/
+final/build/package-lock.json
+# raw prototype photos (cropped copies live in final/assets)
+docs/photos/
+!final/build/
