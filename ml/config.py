@@ -50,6 +50,23 @@ EVENT_OFFSET_HOLD_SAMPLES = 10    # consecutive near-rest raw samples that end a
 EVENT_MAX_SAMPLES = 200           # hard cap on raw samples captured per event
 EVENT_MIN_SAMPLES = 4             # minimum captured samples to bother classifying
 
+# --- Tremor detection (ml/inference/tremor.py) ---
+# Signal-processing detector on the MPU6050 accelerometer, NOT a trained model (BITS-2 has no tremor class).
+# Rest/postural tremor is a rhythmic 3-8 Hz oscillation (Parkinsonian rest tremor ~4-6 Hz). Walking/running
+# also put energy in this band through harmonics, so detection requires the tremor band to dominate the
+# spectrum while slow voluntary movement is small. Thresholds are starting values: verify with a real tremor
+# (or deliberately shaking the hand at ~5 Hz) and adjust here, never inside the detector.
+TREMOR_BAND_HZ = (3.0, 8.0)
+TREMOR_WINDOW_SECONDS = 3.0
+TREMOR_HOP_SECONDS = 0.5              # re-evaluate this often once the window is full
+TREMOR_MIN_RMS = 0.15                 # m/s^2, band amplitude below this is sensor noise / no tremor
+TREMOR_MIN_BAND_RATIO = 0.45          # tremor-band power / total (0.5-15 Hz) power
+TREMOR_MIN_PEAK_RATIO = 4.0           # spectral peak power / median power: rhythmic, not broadband noise
+TREMOR_MAX_LOW_TO_BAND_RMS = 2.0      # slow voluntary motion (0.5-2.5 Hz) rms may be at most 2x the tremor rms
+TREMOR_ON_EVALS = 3                   # consecutive positive evaluations to declare "detected" (1.5 s)
+TREMOR_OFF_EVALS = 4                  # consecutive negatives to clear it (2 s)
+TREMOR_STALE_SECONDS = 3.0            # no motion samples for this long -> "no_data"
+
 # --- Paths ---
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_RAW_DIR = REPO_ROOT / "data" / "raw" / "bits2" / "Dataset"
