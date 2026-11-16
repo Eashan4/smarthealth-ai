@@ -18,6 +18,15 @@ CREATE TABLE IF NOT EXISTS sensor_readings (
     spo2 REAL
 );
 
+-- Heart rate / SpO2 samples that arrive WITHOUT motion data (MPU6050 missing, vitals-only mode).
+CREATE TABLE IF NOT EXISTS vitals_readings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    device_id TEXT NOT NULL,
+    timestamp REAL NOT NULL,
+    heart_rate REAL,
+    spo2 REAL
+);
+
 CREATE TABLE IF NOT EXISTS predictions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     device_id TEXT NOT NULL,
@@ -72,6 +81,15 @@ def insert_reading(conn, device_id, timestamp, imu, heart_rate=None, spo2=None) 
     return cur.lastrowid
 
 
+def insert_vitals(conn, device_id, timestamp, heart_rate=None, spo2=None) -> int:
+    cur = conn.execute(
+        "INSERT INTO vitals_readings (device_id, timestamp, heart_rate, spo2) VALUES (?, ?, ?, ?)",
+        (device_id, timestamp, heart_rate, spo2),
+    )
+    conn.commit()
+    return cur.lastrowid
+
+
 def insert_prediction(conn, device_id, timestamp, activity, confidence, fall_probability,
                        tremor_probability, model_name) -> int:
     cur = conn.execute(
@@ -93,46 +111,45 @@ def insert_alert(conn, device_id, timestamp, alert_type, severity, message, stat
     return cur.lastrowid
 
 
-def latest_reading(conn, device_id=None):
-    q = "SELECT * FROM sensor_readings"
-    args = ()
+def _where(device_id, since):
+    """WHERE clause + args for the optional device filter and `since` (epoch seconds, inclusive)."""
+    conds, args = [], []
     if device_id:
-        q += " WHERE device_id = ?"
-        args = (device_id,)
-    q += " ORDER BY timestamp DESC LIMIT 1"
-    row = conn.execute(q, args).fetchone()
+        conds.append("device_id = ?"); args.append(device_id)
+    if since is not None:
+        conds.append("timestamp >= ?"); args.append(since)
+    return (" WHERE " + " AND ".join(conds) if conds else ""), tuple(args)
+
+
+def _latest(conn, table, device_id, since):
+    where, args = _where(device_id, since)
+    row = conn.execute(f"SELECT * FROM {table}{where} ORDER BY timestamp DESC LIMIT 1", args).fetchone()
     return dict(row) if row else None
 
 
-def latest_prediction(conn, device_id=None):
-    q = "SELECT * FROM predictions"
-    args = ()
-    if device_id:
-        q += " WHERE device_id = ?"
-        args = (device_id,)
-    q += " ORDER BY timestamp DESC LIMIT 1"
-    row = conn.execute(q, args).fetchone()
-    return dict(row) if row else None
+def latest_reading(conn, device_id=None, since=None):
+    return _latest(conn, "sensor_readings", device_id, since)
 
 
-def recent_alerts(conn, limit=50, device_id=None):
-    q = "SELECT * FROM alerts"
-    args = ()
-    if device_id:
-        q += " WHERE device_id = ?"
-        args = (device_id,)
-    q += " ORDER BY timestamp DESC LIMIT ?"
-    rows = conn.execute(q, args + (limit,)).fetchall()
+def latest_prediction(conn, device_id=None, since=None):
+    return _latest(conn, "predictions", device_id, since)
+
+
+def latest_vitals(conn, device_id=None, since=None):
+    """Newest vitals, whether they arrived with IMU data (sensor_readings) or alone (vitals_readings)."""
+    rows = [r for r in (_latest(conn, "vitals_readings", device_id, since),
+                        _latest(conn, "sensor_readings", device_id, since)) if r]
+    return max(rows, key=lambda r: r["timestamp"]) if rows else None
+
+
+def recent_alerts(conn, limit=50, device_id=None, since=None):
+    where, args = _where(device_id, since)
+    rows = conn.execute(f"SELECT * FROM alerts{where} ORDER BY timestamp DESC LIMIT ?", args + (limit,)).fetchall()
     return [dict(r) for r in rows]
 
 
-def history(conn, table, limit=100, device_id=None):
+def history(conn, table, limit=100, device_id=None, since=None):
     assert table in ("sensor_readings", "predictions", "alerts")
-    q = f"SELECT * FROM {table}"
-    args = ()
-    if device_id:
-        q += " WHERE device_id = ?"
-        args = (device_id,)
-    q += " ORDER BY timestamp DESC LIMIT ?"
-    rows = conn.execute(q, args + (limit,)).fetchall()
+    where, args = _where(device_id, since)
+    rows = conn.execute(f"SELECT * FROM {table}{where} ORDER BY timestamp DESC LIMIT ?", args + (limit,)).fetchall()
     return [dict(r) for r in rows]

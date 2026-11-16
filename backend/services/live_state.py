@@ -8,6 +8,7 @@ module-level singletons are fine for a single-process Flask dev server
 from __future__ import annotations
 
 from ml.inference.realtime import ActivityPredictor, DeviceInferenceStream
+from ml.inference.tremor import TremorDetector
 
 from .decision_engine import DecisionEngine
 
@@ -15,6 +16,7 @@ _predictor: ActivityPredictor | None = None
 _streams: dict[str, DeviceInferenceStream] = {}
 _decision_engine = DecisionEngine()
 _alert_active: dict[str, bool] = {}
+_tremor: dict[str, TremorDetector] = {}
 
 
 def get_predictor() -> ActivityPredictor:
@@ -28,6 +30,12 @@ def get_stream(device_id: str) -> DeviceInferenceStream:
     if device_id not in _streams:
         _streams[device_id] = DeviceInferenceStream(get_predictor())
     return _streams[device_id]
+
+
+def get_tremor(device_id: str) -> TremorDetector:
+    if device_id not in _tremor:
+        _tremor[device_id] = TremorDetector()
+    return _tremor[device_id]
 
 
 def get_decision_engine() -> DecisionEngine:
@@ -44,5 +52,6 @@ def set_alert_active(device_id: str, active: bool) -> None:
 
 def reset_device(device_id: str) -> None:
     _streams.pop(device_id, None)
+    _tremor.pop(device_id, None)
     _decision_engine.reset(device_id)
     _alert_active[device_id] = False
