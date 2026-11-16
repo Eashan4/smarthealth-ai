@@ -1,0 +1,154 @@
+{
+ "n": 2111,
+ "bmi_mean": 28.37770724774988,
+ "class_pct": {
+  "Underweight": 9.8,
+  "Normal": 24.1,
+  "Overweight_I": 12.8,
+  "Overweight_II": 13.6,
+  "Obesity_I": 20.1,
+  "Obesity_II": 13.3,
+  "Obesity_III": 6.3
+ },
+ "factors": [
+  {
+   "factor": "FAF",
+   "levels": 4,
+   "H": 590.8452,
+   "p": 0.0,
+   "eta2": 0.279,
+   "range_of_means": 10.8386,
+   "p_adj_BH": 0.0
+  },
+  {
+   "factor": "FAVC",
+   "levels": 2,
+   "H": 226.6991,
+   "p": 0.0,
+   "eta2": 0.107,
+   "range_of_means": 7.7574,
+   "p_adj_BH": 0.0
+  },
+  {
+   "factor": "family_history",
+   "levels": 2,
+   "H": 197.8529,
+   "p": 0.0,
+   "eta2": 0.0933,
+   "range_of_means": 6.0369,
+   "p_adj_BH": 0.0
+  },
+  {
+   "factor": "TUE",
+   "levels": 3,
+   "H": 153.7043,
+   "p": 0.0,
+   "eta2": 0.072,
+   "range_of_means": 5.1016,
+   "p_adj_BH": 0.0
+  },
+  {
+   "factor": "CAEC",
+   "levels": 4,
+   "H": 75.7188,
+   "p": 0.0,
+   "eta2": 0.0345,
+   "range_of_means": 5.0261,
+   "p_adj_BH": 0.0
+  },
+  {
+   "factor": "MTRANS",
+   "levels": 5,
+   "H": 35.1611,
+   "p": 0.0,
+   "eta2": 0.0148,
+   "range_of_means": 8.2709,
+   "p_adj_BH": 0.0
+  },
+  {
+   "factor": "FCVC",
+   "levels": 3,
+   "H": 18.7851,
+   "p": 0.0001,
+   "eta2": 0.008,
+   "range_of_means": 2.3616,
+   "p_adj_BH": 0.0001
+  },
+  {
+   "factor": "Gender",
+   "levels": 2,
+   "H": 17.7165,
+   "p": 0.0,
+   "eta2": 0.0079,
+   "range_of_means": 1.4377,
+   "p_adj_BH": 0.0
+  },
+  {
+   "factor": "CALC",
+   "levels": 4,
+   "H": 12.2511,
+   "p": 0.0066,
+   "eta2": 0.0044,
+   "range_of_means": 1.2908,
+   "p_adj_BH": 0.0095
+  },
+  {
+   "factor": "SCC",
+   "levels": 2,
+   "H": 3.2035,
+   "p": 0.0735,
+   "eta2": 0.001,
+   "range_of_means": 1.1247,
+   "p_adj_BH": 0.0955
+  },
+  {
+   "factor": "CH2O",
+   "levels": 3,
+   "H": 2.4337,
+   "p": 0.2962,
+   "eta2": 0.0002,
+   "range_of_means": 0.6229,
+   "p_adj_BH": 0.35
+  },
+  {
+   "factor": "NCP",
+   "levels": 4,
+   "H": 3.0756,
+   "p": 0.3801,
+   "eta2": 0.0,
+   "range_of_means": 1.1137,
+   "p_adj_BH": 0.4118
+  },
+  {
+   "factor": "SMOKE",
+   "levels": 2,
+   "H": 0.3012,
+   "p": 0.5832,
+   "eta2": 0.0,
+   "range_of_means": 0.4822,
+   "p_adj_BH": 0.5832
+  }
+ ],
+ "n_significant": 9,
+ "caec_means": {
+  "no": 24.04,
+  "Sometimes": 29.07,
+  "Frequently": 26.37,
+  "Always": 24.94
+ },
+ "cramers_v": {
+  "CAEC": 0.11967463523148597,
+  "CALC": 0.06685404141352527,
+  "MTRANS": 0.07177349790859675,
+  "FAVC": 0.3659219508713867,
+  "family_history": 0.31010142373401844,
+  "Gender": 0.1000877512036859
+ },
+ "max_vif": 1.01,
+ "faf_gap": {
+  "0": 10.32,
+  "1": 6.719999999999999,
+  "2": 6.169999999999998,
+  "3": 5.700000000000003
+ }
+}
