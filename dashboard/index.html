@@ -21,9 +21,19 @@
       <input id="device-input" class="device-input mono" type="text" aria-label="Device ID" spellcheck="false">
     </div>
     <div class="statusbar-right">
+      <div class="linkbar" id="linkbar">
+        <span class="led" id="link-led" data-state="idle" title="USB link"></span>
+        <select id="port-select" class="link-control mono" aria-label="USB serial port"></select>
+        <button id="port-refresh" class="link-control mono" type="button" title="Rescan ports" aria-label="Rescan ports">&#8635;</button>
+        <button id="demo-btn" class="link-control mono" type="button" aria-pressed="false">Demo</button>
+        <button id="port-btn" class="link-control link-primary mono" type="button">Connect</button>
+        <span id="port-msg" class="mono dim link-msg" role="status"></span>
+      </div>
       <span class="mono dim" id="clock">--:--:--</span>
     </div>
   </header>
+
+  <div id="mode-banner" class="mode-banner" data-mode="idle" role="status"></div>
 
   <div id="alert-rail" class="alert-rail hidden" role="alert">
     <span class="alert-rail-text" id="alert-rail-text"></span>
@@ -77,7 +87,7 @@
             <span class="led" id="tremor-led" data-state="unavailable"></span>
             <div>
               <p class="status-label">Tremor</p>
-              <p class="status-value">Not available</p>
+              <p class="status-value" id="tremor-value">No motion data</p>
             </div>
           </div>
         </section>
@@ -123,6 +133,10 @@
 </div>
 
 <script src="/static/config.js"></script>
+<script src="/static/mock.js"></script>
+<script src="/static/datasource.js"></script>
 <script src="/static/app.js"></script>
+<script src="/static/tremor.js"></script>
+<script src="/static/serial.js"></script>
 </body>
 </html>

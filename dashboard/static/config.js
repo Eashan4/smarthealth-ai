@@ -10,7 +10,7 @@ window.SMARTHEALTH_CONFIG = {
   // more live-feeling, higher server load. 2000 matches the ~1.5-3s cadence
   // a real device is expected to produce inference results at (see
   // docs/DOCUMENTATION.md sec 15).
-  POLL_INTERVAL_MS: 2000,
+  POLL_INTERVAL_MS: 1000,
 
   // How many recent points to keep in the on-screen HR/SpO2/waveform traces
   // and the activity history strip.
