@@ -14,7 +14,9 @@ static MAX30105 particleSensor;
 static const uint8_t RATE_SIZE = 4;
 static float rates[RATE_SIZE];
 static uint8_t rate_spot = 0;
-static long last_beat = 0;
+static uint8_t rate_count = 0;
+static unsigned long last_beat_ms = 0;  // for expiring a stale BPM
+static unsigned long last_beat = 0;
 static float current_bpm = -1;
 
 // --- SpO2: simplified AC/DC ratio estimate over a short buffer, NOT the
@@ -22,7 +24,7 @@ static float current_bpm = -1;
 // this project (docs/DOCUMENTATION.md, README) -- this keeps that honest
 // framing true at the firmware level too, rather than implying clinical-
 // grade SpO2 calculation. See docs/DOCUMENTATION.md sec 16 known limitations. ---
-static const uint8_t SPO2_BUF_SIZE = 50;
+static const uint8_t SPO2_BUF_SIZE = 100;  // 2 s at 50 Hz: spans >=1 heartbeat
 static uint32_t ir_buf[SPO2_BUF_SIZE];
 static uint32_t red_buf[SPO2_BUF_SIZE];
 static uint8_t spo2_buf_idx = 0;
@@ -33,7 +35,7 @@ bool sensors_init_imu() {
     if (!mpu.begin()) {
         return false;
     }
-    mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+    mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
     mpu.setGyroRange(MPU6050_RANGE_500_DEG);
     mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
     return true;
@@ -43,9 +45,9 @@ bool sensors_init_vitals() {
     if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) {
         return false;
     }
-    particleSensor.setup();  // default: LED brightness, sample avg, mode, rate, pulse width, ADC range
-    particleSensor.setPulseAmplitudeRed(0x0A);
-    particleSensor.setPulseAmplitudeGreen(0);
+    // brightness 60 (~12 mA), avg 4, mode 2 (red+IR only: MAX30102 has no green LED),
+    // 200 sps / avg 4 = 50 Hz output (matches the 50 Hz poll), 411 us, 4096 nA range.
+    particleSensor.setup(60, 4, 2, 200, 411, 4096);
     return true;
 }
 
@@ -91,29 +93,35 @@ static float compute_spo2_estimate() {
     return spo2;
 }
 
+// Call at ~IMU rate (50 Hz): checkForBeat() needs a dense PPG stream, 1 Hz can never detect beats.
 VitalsSample sensors_read_vitals() {
     VitalsSample s{-1, -1, false};
 
     long ir_value = particleSensor.getIR();
     long red_value = particleSensor.getRed();
     if (ir_value < 5000) {
-        // No finger/wrist contact detected; don't report a fabricated reading.
+        // No contact: drop all state so a stale BPM/SpO2 is never reported.
+        current_bpm = -1; rate_count = 0; rate_spot = 0; last_beat = 0; spo2_buf_idx = 0; spo2_buf_full = false;
         return s;
     }
 
+    unsigned long now = millis();
     if (checkForBeat(ir_value)) {
-        long now = millis();
-        float delta = now - last_beat;
-        last_beat = now;
-        float bpm = 60000.0f / delta;
-        if (bpm > 20 && bpm < 255) {
-            rates[rate_spot++] = bpm;
-            rate_spot %= RATE_SIZE;
-            float avg = 0;
-            for (uint8_t i = 0; i < RATE_SIZE; i++) avg += rates[i];
-            current_bpm = avg / RATE_SIZE;
+        if (last_beat != 0) {
+            float bpm = 60000.0f / (now - last_beat);
+            if (bpm > 30 && bpm < 220) {
+                rates[rate_spot++] = bpm;
+                rate_spot %= RATE_SIZE;
+                if (rate_count < RATE_SIZE) rate_count++;
+                float sum = 0;
+                for (uint8_t i = 0; i < rate_count; i++) sum += rates[i];
+                current_bpm = sum / rate_count;
+                last_beat_ms = now;
+            }
         }
+        last_beat = now;
     }
+    if (current_bpm > 0 && now - last_beat_ms > 5000) current_bpm = -1;  // no beat for 5 s
 
     ir_buf[spo2_buf_idx] = (uint32_t)ir_value;
     red_buf[spo2_buf_idx] = (uint32_t)red_value;
