@@ -1,0 +1,86 @@
+{
+ "models": {
+  "Naive Bayes": {
+   "cv_acc": 0.9666666666666666,
+   "test_acc": 0.9755555555555555,
+   "test_macro_f1": 0.9759917975042525
+  },
+  "Logistic regression": {
+   "cv_acc": 0.9644444444444445,
+   "test_acc": 0.9755555555555555,
+   "test_macro_f1": 0.9757670661118549
+  },
+  "Linear SVM": {
+   "cv_acc": 0.9740740740740741,
+   "test_acc": 0.98,
+   "test_macro_f1": 0.9803224414398234
+  }
+ },
+ "best": "Linear SVM",
+ "silhouette": {
+  "2": 0.05690753466747904,
+  "3": 0.07365395739947816,
+  "4": 0.091874937168798,
+  "5": 0.11063306882724,
+  "6": 0.12789491011814325,
+  "7": 0.1380196729161727,
+  "8": 0.14782508125114646,
+  "9": 0.15319734859275935,
+  "10": 0.1607368083745286
+ },
+ "k_best": 10,
+ "ari": 0.8927563673668417,
+ "purity": 0.955,
+ "ari_all_words": -0.00020679960563691518,
+ "purity_all_words": 0.2038888888888889,
+ "top_terms": {
+  "cardiology": [
+   "syncope",
+   "palpitations",
+   "clopidogrel",
+   "ankle swelling",
+   "ankle",
+   "infarction denies"
+  ],
+  "endocrinology": [
+   "polyuria",
+   "thirst",
+   "weight gain",
+   "gain",
+   "dapagliflozin",
+   "heat intolerance"
+  ],
+  "gastroenterology": [
+   "vomiting",
+   "heartburn",
+   "diarrhoea",
+   "weight loss",
+   "abdominal pain",
+   "abdominal"
+  ],
+  "neurology": [
+   "tremor",
+   "numbness",
+   "seizure",
+   "memory loss",
+   "memory",
+   "dementia denies"
+  ],
+  "orthopaedics": [
+   "stiffness",
+   "limping",
+   "joint pain",
+   "joint",
+   "back",
+   "back pain"
+  ],
+  "respiratory": [
+   "cough",
+   "wheeze",
+   "tightness",
+   "chest tightness",
+   "bronchitis denies",
+   "ipratropium"
+  ]
+ }
+}

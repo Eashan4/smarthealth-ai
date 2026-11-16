@@ -1,0 +1,93 @@
+{
+ "regex_v1": {
+  "bp": 0.845,
+  "hr": 1.0,
+  "dose": 1.0,
+  "freq": 1.0
+ },
+ "regex_v2": {
+  "bp": 1.0,
+  "hr": 1.0,
+  "dose": 1.0,
+  "freq": 1.0
+ },
+ "ner": {
+  "dictionary|DRUG": [
+   1.0,
+   0.6254777070063694,
+   0.7695924764890282
+  ],
+  "dictionary|CONDITION": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "dictionary|SYMPTOM": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "dictionary|ALL": [
+   1.0,
+   0.9165247018739353,
+   0.9564444444444444
+  ],
+  "tagger (with lexicon)|DRUG": [
+   1.0,
+   0.6254777070063694,
+   0.7695924764890282
+  ],
+  "tagger (with lexicon)|CONDITION": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "tagger (with lexicon)|SYMPTOM": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "tagger (with lexicon)|ALL": [
+   1.0,
+   0.9165247018739353,
+   0.9564444444444444
+  ],
+  "tagger (no lexicon)|DRUG": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "tagger (no lexicon)|CONDITION": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "tagger (no lexicon)|SYMPTOM": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "tagger (no lexicon)|ALL": [
+   1.0,
+   1.0,
+   1.0
+  ]
+ },
+ "drug_recall": {
+  "dictionary": {
+   "seen": 1.0,
+   "unseen": 0.0
+  },
+  "tagger (with lexicon)": {
+   "seen": 1.0,
+   "unseen": 0.0
+  },
+  "tagger (no lexicon)": {
+   "seen": 1.0,
+   "unseen": 1.0
+  }
+ },
+ "negation_accuracy": 1.0,
+ "n_unseen_mentions": 294,
+ "n_drug_mentions": 785
+}
