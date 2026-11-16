@@ -1,78 +1,50 @@
-"""Phase 8 -- fall decision engine: AI probability + rule verification +
-debouncing -> confirmed fall event.
+"""Fall decision engine (live demo version).
 
-Design note (deviation from the naive "AI AND rule" baseline sketch in
-docs/PLAN.md, evaluated and documented per that plan's own rule that changes
-must be justified against measured results, not made ad hoc):
+Primary evidence is the rule-based state machine in ml/inference/motion_rules.py running on the continuous stream
+(free-fall dip and/or large impact, then ~1 s of stillness). The event-triggered CNN (trained on BITS-2, a different
+sensor placement) is supporting evidence only: its fall probability counts when it is >= FALL_PROBABILITY_THRESHOLD,
+fresh (FALL_CNN_EVIDENCE_TTL_SECONDS) AND an impact > FALL_CNN_MIN_IMPACT m/s^2 happened in the last 2 s.
 
-ml/evaluation/threshold_analysis.py measured, on real BITS-2 trials, that the
-tuned AI fall-probability threshold (0.466) already reaches precision=1.00 /
-recall=0.917 on the held-out validation set by itself, while requiring the
-rule-based acceleration check (95th-percentile ADL peak) as a hard AND-gate
-would only catch 54% of true fall trials (many real falls in this dataset --
-e.g. a controlled fall onto a bed -- never exceed that peak). Gating
-confirmation on AI-AND-rule would therefore roughly halve measured fall
-recall for no precision gain the data supports.
+    confirmed_fall = rules confirmed  OR  (CNN prob >= threshold AND recent impact)
+    fall_probability (stored) = max(CNN prob, rule score 0..1)
 
-So here: CONFIRMED fall = AI probability over threshold, sustained for
-ALERT_DEBOUNCE_WINDOWS consecutive windows (debounce). The rule-based
-acceleration/inactivity checks are still computed and attached to every
-result as `motion_verified` / `post_fall_inactivity_detected` -- surfaced on
-the dashboard and logged with the alert for explainability/audit, not used
-to suppress a confirmed AI detection. Revisit this balance once Phase 2
-custom hardware data is available (see docs/DOCUMENTATION.md sec 16).
-
-Tremor: BITS-2 has no tremor-like class (see ml/config.py CLASSES), so
-tremor detection is not implemented in v1 -- `tremor_probability` is always
-reported as None. Documented as a known limitation, not silently omitted.
-
-Debouncing note (second deviation from the PLAN.md baseline sketch, also
-forced by the event-triggered redesign in ml/segmentation/windowing.py):
-the original sketch debounces across N *consecutive overlapping windows* of
-a continuous stream. With EventSegmentBuffer, one real motion event yields
-exactly one captured segment and one classification -- there are no
-overlapping windows of the same event to require agreement across. So
-confirmation here is per-event (single-event AI threshold + attached rule
-signals), not cross-event-consecutive. ALERT_DEBOUNCE_WINDOWS is kept as a
-lightweight cooldown instead: it suppresses re-firing a *new* alert for a
-device that already has one active, rather than requiring repeated events.
+Heuristics tuned on synthetic data, not clinically validated. Tremor is handled separately (ml/inference/tremor.py).
 """
 
 from __future__ import annotations
 
-import numpy as np
+import time
 
-from ml.config import (
-    ACCELERATION_THRESHOLD,
-    FALL_PROBABILITY_THRESHOLD,
-    IMU_SAMPLE_RATE,
-    POST_FALL_INACTIVITY_SECONDS,
-)
-
-_INACTIVITY_STD_THRESHOLD = 2.0  # m/s^2, "low motion" band width around rest
+from ml.config import FALL_CNN_EVIDENCE_TTL_SECONDS, FALL_CNN_MIN_IMPACT, FALL_PROBABILITY_THRESHOLD
 
 
 class DecisionEngine:
-    def evaluate(self, device_id: str, prediction: dict, raw_window: np.ndarray) -> dict:
-        accel_mag = np.linalg.norm(raw_window[:, :3], axis=1)
-        peak_accel = float(accel_mag.max())
-        motion_verified = peak_accel >= ACCELERATION_THRESHOLD
+    def __init__(self):
+        self._cnn: dict[str, tuple[float, float]] = {}   # device -> (fall probability, time seen)
 
-        tail_len = max(1, int(POST_FALL_INACTIVITY_SECONDS * IMU_SAMPLE_RATE))
-        tail = accel_mag[-tail_len:]
-        post_fall_inactivity_detected = bool(tail.std() < _INACTIVITY_STD_THRESHOLD)
+    def note_cnn(self, device_id: str, prediction: dict, now: float | None = None) -> None:
+        self._cnn[device_id] = (prediction["fall_probability"], time.time() if now is None else now)
 
-        ai_candidate = prediction["fall_probability"] >= FALL_PROBABILITY_THRESHOLD
-
+    def evaluate(self, device_id: str, motion: dict, now: float | None = None) -> dict:
+        """motion: result dict from MotionClassifier. Returns the decision for this 1 Hz tick."""
+        now = time.time() if now is None else now
+        p, at = self._cnn.get(device_id, (0.0, 0.0))
+        cnn_p = p if now - at <= FALL_CNN_EVIDENCE_TTL_SECONDS else 0.0
+        impact = motion["features"]["peak_accel_2s"] >= FALL_CNN_MIN_IMPACT
+        rules = motion["fall_state"] == "confirmed"
+        cnn_candidate = cnn_p >= FALL_PROBABILITY_THRESHOLD
+        confirmed = rules or (cnn_candidate and impact)
         return {
             "device_id": device_id,
-            "ai_fall_candidate": ai_candidate,
-            "motion_verified": motion_verified,
-            "peak_acceleration": peak_accel,
-            "post_fall_inactivity_detected": post_fall_inactivity_detected,
-            "confirmed_fall": ai_candidate,
-            "tremor_probability": None,  # not trained in v1, see module docstring
+            "confirmed_fall": confirmed,
+            "fall_active": confirmed,                    # False -> ingest re-arms the alert
+            "by_rules": rules,
+            "ai_fall_candidate": cnn_candidate,
+            "motion_verified": impact or rules,
+            "cnn_fall_probability": cnn_p,
+            "fall_probability": max(cnn_p, motion["fall_score"], 1.0 if confirmed else 0.0),
+            "activity": "Fall" if confirmed else motion["activity"],
         }
 
     def reset(self, device_id: str) -> None:
-        pass
+        self._cnn.pop(device_id, None)

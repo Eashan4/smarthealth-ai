@@ -7,6 +7,7 @@ module-level singletons are fine for a single-process Flask dev server
 
 from __future__ import annotations
 
+from ml.inference.motion_rules import MotionClassifier
 from ml.inference.realtime import ActivityPredictor, DeviceInferenceStream
 from ml.inference.tremor import TremorDetector
 
@@ -17,6 +18,7 @@ _streams: dict[str, DeviceInferenceStream] = {}
 _decision_engine = DecisionEngine()
 _alert_active: dict[str, bool] = {}
 _tremor: dict[str, TremorDetector] = {}
+_motion: dict[str, MotionClassifier] = {}
 
 
 def get_predictor() -> ActivityPredictor:
@@ -38,6 +40,21 @@ def get_tremor(device_id: str) -> TremorDetector:
     return _tremor[device_id]
 
 
+def get_motion_classifier(device_id: str) -> MotionClassifier:
+    if device_id not in _motion:
+        _motion[device_id] = MotionClassifier()
+    return _motion[device_id]
+
+
+def get_motion(device_id: str) -> dict:
+    """Latest rule-classifier result + tremor status (in memory, so inherently live). {"activity": None} if none yet."""
+    last = _motion[device_id].status() if device_id in _motion else None
+    if last is None:
+        return {"activity": None}
+    return {"activity": last["activity"], "confidence": last["confidence"], "features": last["features"],
+            "fall_state": _motion[device_id].fall_state, "tremor": get_tremor(device_id).status()}
+
+
 def get_decision_engine() -> DecisionEngine:
     return _decision_engine
 
@@ -53,5 +70,6 @@ def set_alert_active(device_id: str, active: bool) -> None:
 def reset_device(device_id: str) -> None:
     _streams.pop(device_id, None)
     _tremor.pop(device_id, None)
+    _motion.pop(device_id, None)
     _decision_engine.reset(device_id)
     _alert_active[device_id] = False
