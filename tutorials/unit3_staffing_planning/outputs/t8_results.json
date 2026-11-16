@@ -1,0 +1,90 @@
+{
+ "encounters": 81059,
+ "occupancy_2024_pct": 91.2743950039032,
+ "licensed_beds": 420,
+ "top_margin_per_bed_day": "Orthopaedics",
+ "lowest_margin_per_bed_day": "Pulmonology",
+ "scorecard": [
+  {
+   "service_line": "Orthopaedics",
+   "admissions": 13661,
+   "bed_days": 48853,
+   "alos": 3.576,
+   "revenue_m": 209.791,
+   "cost_m": 141.749,
+   "margin_m": 68.042,
+   "margin_pct": 32.433,
+   "margin_per_bed_day": 1392.783,
+   "cagr_pct": 2.998,
+   "strategy": "PROTECT"
+  },
+  {
+   "service_line": "Cardiology",
+   "admissions": 16393,
+   "bed_days": 79065,
+   "alos": 4.823,
+   "revenue_m": 284.75,
+   "cost_m": 197.567,
+   "margin_m": 87.184,
+   "margin_pct": 30.618,
+   "margin_per_bed_day": 1102.681,
+   "cagr_pct": 5.0,
+   "strategy": "GROW"
+  },
+  {
+   "service_line": "Oncology",
+   "admissions": 10128,
+   "bed_days": 69960,
+   "alos": 6.908,
+   "revenue_m": 328.987,
+   "cost_m": 252.138,
+   "margin_m": 76.849,
+   "margin_pct": 23.359,
+   "margin_per_bed_day": 1098.471,
+   "cagr_pct": 7.998,
+   "strategy": "GROW"
+  },
+  {
+   "service_line": "Neurology",
+   "admissions": 11362,
+   "bed_days": 67574,
+   "alos": 5.947,
+   "revenue_m": 223.067,
+   "cost_m": 195.957,
+   "margin_m": 27.11,
+   "margin_pct": 12.153,
+   "margin_per_bed_day": 401.188,
+   "cagr_pct": 4.0,
+   "strategy": "REVIEW"
+  },
+  {
+   "service_line": "General Surgery",
+   "admissions": 15444,
+   "bed_days": 63692,
+   "alos": 4.124,
+   "revenue_m": 248.311,
+   "cost_m": 222.928,
+   "margin_m": 25.383,
+   "margin_pct": 10.222,
+   "margin_per_bed_day": 398.53,
+   "cagr_pct": -1.005,
+   "strategy": "REVIEW"
+  },
+  {
+   "service_line": "Pulmonology",
+   "admissions": 14071,
+   "bed_days": 75957,
+   "alos": 5.398,
+   "revenue_m": 220.444,
+   "cost_m": 197.209,
+   "margin_m": 23.235,
+   "margin_pct": 10.54,
+   "margin_per_bed_day": 305.892,
+   "cagr_pct": 5.997,
+   "strategy": "FIX COST / PRICE"
+  }
+ ],
+ "peak_month": 1,
+ "trough_month": 6,
+ "peak_to_trough": 1.2517024881241072
+}

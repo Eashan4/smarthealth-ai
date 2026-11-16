@@ -1,0 +1,58 @@
+{
+ "beds": 420,
+ "target_occupancy": 0.85,
+ "plan_year": 2027,
+ "growth_pct": {
+  "Cardiology": 4.9,
+  "General Surgery": -1.0,
+  "Neurology": 4.04,
+  "Oncology": 7.16,
+  "Orthopaedics": 2.27,
+  "Pulmonology": 6.26
+ },
+ "beds_needed": {
+  "low": [
+   464,
+   477,
+   490,
+   503,
+   518
+  ],
+  "base": [
+   472,
+   493,
+   515,
+   538,
+   563
+  ],
+  "high": [
+   480,
+   510,
+   542,
+   576,
+   613
+  ]
+ },
+ "years": [
+  2025,
+  2026,
+  2027,
+  2028,
+  2029
+ ],
+ "first_year_short_base": 2025,
+ "beds_2024": 452,
+ "margin_full_m": 123.14661565877512,
+ "margin_equal_cut_m": 100.43465827932087,
+ "margin_lp_m": 101.99340955483996,
+ "lp_gain_m": 1.558751275519088,
+ "shadow_price_per_bed_day": 1397.371717477874,
+ "lp_cut_pct": {
+  "Cardiology": 20.0,
+  "General Surgery": 20.0,
+  "Neurology": 20.0,
+  "Oncology": 20.0,
+  "Orthopaedics": 6.2,
+  "Pulmonology": 20.0
+ }
+}

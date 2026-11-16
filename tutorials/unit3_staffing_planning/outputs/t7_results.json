@@ -1,0 +1,44 @@
+{
+ "models": {
+  "seasonal naive (t-7)": {
+   "MAE": 37.425,
+   "MAPE": 17.633242232877063
+  },
+  "linear (calendar + Fourier)": {
+   "MAE": 24.500506444155743,
+   "MAPE": 11.637725313514569
+  },
+  "gradient boosting (+ lags)": {
+   "MAE": 27.265970106211082,
+   "MAPE": 12.963182298038204
+  }
+ },
+ "best": "linear (calendar + Fourier)",
+ "staffing": {
+  "flat roster (train mean)": {
+   "short_days": 73,
+   "nurse_shifts_short": 835,
+   "nurse_shifts_idle": 291,
+   "cost": 3631.0
+  },
+  "flat roster (train 90th pct)": {
+   "short_days": 21,
+   "nurse_shifts_short": 159,
+   "nurse_shifts_idle": 1535,
+   "cost": 2171.0
+  },
+  "forecast roster": {
+   "short_days": 47,
+   "nurse_shifts_short": 437,
+   "nurse_shifts_idle": 501,
+   "cost": 2249.0
+  },
+  "forecast + 40-patient buffer": {
+   "short_days": 13,
+   "nurse_shifts_short": 75,
+   "nurse_shifts_idle": 1691,
+   "cost": 1991.0
+  }
+ },
+ "buffer": 40.42873407394539
+}
