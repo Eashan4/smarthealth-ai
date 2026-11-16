@@ -20,20 +20,48 @@ pio device monitor       # serial monitor, 115200 baud
 `secrets.h` is gitignored -- never commit real WiFi credentials (see
 docs/AUDIT.md sec 4).
 
-## Wiring (default assumption, unverified -- confirm during Phase 1)
+## NodeMCU v3 (ESP8266) -- USB cable only, open the .ino in the Arduino IDE
 
-Standard ESP32 DevKit I2C bus, shared by both sensors:
+Sketch: `firmware/esp8266_ino/SmartHealth_ESP8266/SmartHealth_ESP8266.ino`. No WiFi. It streams 50 lines/s over USB;
+the backend reads them when you pick the port in the dashboard and press Connect (close the Serial Monitor first).
+Libraries: Adafruit MPU6050, Adafruit Unified Sensor, SparkFun MAX3010x.
 
-| Signal | ESP32 pin |
+| Part pin | NodeMCU pin (GPIO) |
 |---|---|
-| SDA (MPU6050 + MAX30102) | GPIO21 |
-| SCL (MPU6050 + MAX30102) | GPIO22 |
-| Buzzer (+) | GPIO25 |
-| Push button | GPIO26 (internal pull-up, active-low) |
+| MPU6050 VCC / MAX30102 VIN | 3V3 |
+| MPU6050 GND / MAX30102 GND | GND |
+| MPU6050 SDA + MAX30102 SDA | D2 (GPIO4) |
+| MPU6050 SCL + MAX30102 SCL | D1 (GPIO5) |
+| MPU6050 AD0 | GND |
+| Buzzer + (active) | D5 (GPIO14) |
+| Buzzer - | GND |
+| Button | D6 (GPIO12) to GND |
 
-See `src/config.h` for the single source of truth on pins/rates -- update
-there (and docs/DOCUMENTATION.md sec 3) once the real board wiring is
-confirmed, not scattered across files.
+## Wiring (ESP32 DevKit, all sensors 3.3 V)
+
+| Part pin | ESP32 pin | Notes |
+|---|---|---|
+| MPU6050 VCC | 3V3 | |
+| MPU6050 GND | GND | |
+| MPU6050 SDA | GPIO21 | shared I2C bus |
+| MPU6050 SCL | GPIO22 | shared I2C bus |
+| MPU6050 AD0 | GND | address 0x68 (do not leave floating) |
+| MAX30102 VIN | 3V3 | |
+| MAX30102 GND | GND | |
+| MAX30102 SDA | GPIO21 | shared (address 0x57) |
+| MAX30102 SCL | GPIO22 | shared |
+| MAX30102 INT | -- | unused |
+| Active buzzer + (or module S/IN) | GPIO25 | active-HIGH; module with transistor preferred |
+| Active buzzer - (GND) | GND | |
+| Push button | GPIO26 -- GND | internal pull-up, active-low |
+
+Pins live in `src/config.h`. Avoid GPIO 0/2/12/15 (boot straps) and 6-11 (flash).
+
+## Architecture
+
+Core 1 `loop()` samples IMU + MAX30102 at a fixed 50 Hz into a queue; core 0
+`net_task` does WiFi/NTP/HTTP POSTs. Slow or dead network never slows sampling
+(new samples are dropped and counted: see `dropped=` in the 5 s serial status line).
 
 ## What it does
 
@@ -50,6 +78,9 @@ confirmed, not scattered across files.
    blocking or crashing (docs/DOCUMENTATION.md sec 12, responsibility #11).
 
 ## Known limitations
+
+- Not yet run on hardware. One blocking POST per sample means the achievable rate
+  depends on WiFi RTT (~15-30 ms typical); watch `dropped=`. A batch endpoint is the fix if it climbs.
 
 - SpO2 uses a simplified AC/DC ratio formula (`compute_spo2_estimate()` in
   `src/sensors.cpp`), not the full Maxim reference lookup-table algorithm --

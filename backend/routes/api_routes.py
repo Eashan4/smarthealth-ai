@@ -9,6 +9,15 @@ from backend.database import db
 api_bp = Blueprint("api", __name__)
 
 
+def _since():
+    """Optional ?since=<epoch seconds>: the dashboard's live mode passes the hardware session start so
+    nothing recorded before it (old runs, simulated data) is ever shown as live."""
+    try:
+        return float(request.args["since"])
+    except (KeyError, ValueError):
+        return None
+
+
 @api_bp.route("/api/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok"})
@@ -19,8 +28,8 @@ def latest():
     device_id = request.args.get("device_id")
     conn = db.get_connection()
     try:
-        reading = db.latest_reading(conn, device_id)
-        prediction = db.latest_prediction(conn, device_id)
+        reading = db.latest_reading(conn, device_id, since=_since())
+        prediction = db.latest_prediction(conn, device_id, since=_since())
         return jsonify({"reading": reading, "prediction": prediction})
     finally:
         conn.close()
@@ -31,7 +40,7 @@ def activity():
     device_id = request.args.get("device_id")
     conn = db.get_connection()
     try:
-        prediction = db.latest_prediction(conn, device_id)
+        prediction = db.latest_prediction(conn, device_id, since=_since())
         if prediction is None:
             return jsonify({"activity": None, "confidence": None})
         return jsonify({
@@ -50,7 +59,7 @@ def vitals():
     device_id = request.args.get("device_id")
     conn = db.get_connection()
     try:
-        reading = db.latest_reading(conn, device_id)
+        reading = db.latest_vitals(conn, device_id, since=_since())
         if reading is None:
             return jsonify({"heart_rate": None, "spo2": None})
         return jsonify({
@@ -62,13 +71,21 @@ def vitals():
         conn.close()
 
 
+@api_bp.route("/api/tremor", methods=["GET"])
+def tremor():
+    """Live tremor state from the accelerometer (in memory, so it is inherently 'live only')."""
+    from backend.services import live_state
+    device_id = request.args.get("device_id") or "wearable_01"
+    return jsonify(live_state.get_tremor(device_id).status())
+
+
 @api_bp.route("/api/alerts", methods=["GET"])
 def alerts():
     device_id = request.args.get("device_id")
     limit = int(request.args.get("limit", 50))
     conn = db.get_connection()
     try:
-        return jsonify(db.recent_alerts(conn, limit=limit, device_id=device_id))
+        return jsonify(db.recent_alerts(conn, limit=limit, device_id=device_id, since=_since()))
     finally:
         conn.close()
 
@@ -82,6 +99,6 @@ def history():
         return jsonify({"error": "table must be one of sensor_readings, predictions, alerts"}), 400
     conn = db.get_connection()
     try:
-        return jsonify(db.history(conn, table, limit=limit, device_id=device_id))
+        return jsonify(db.history(conn, table, limit=limit, device_id=device_id, since=_since()))
     finally:
         conn.close()
