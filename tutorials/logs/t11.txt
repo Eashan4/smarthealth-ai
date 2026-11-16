@@ -1,0 +1,35 @@
+train 1500 notes (known drugs only); test 600 notes; 294 of 785 test drug mentions are drugs never seen in training
+
+Regex extraction accuracy on test notes
+  field       v1  v2 (fixed)
+  bp       0.845       1.000
+  hr       1.000       1.000
+  dose     1.000       1.000
+  freq     1.000       1.000
+  v1 missed blood pressure written as '150 over 90'; v2 adds that pattern.
+
+method                     type            P      R     F1
+dictionary                 DRUG        1.000  0.625  0.770
+dictionary                 CONDITION   1.000  1.000  1.000
+dictionary                 SYMPTOM     1.000  1.000  1.000
+dictionary                 ALL         1.000  0.917  0.956
+
+tagger (with lexicon)      DRUG        1.000  0.625  0.770
+tagger (with lexicon)      CONDITION   1.000  1.000  1.000
+tagger (with lexicon)      SYMPTOM     1.000  1.000  1.000
+tagger (with lexicon)      ALL         1.000  0.917  0.956
+
+tagger (no lexicon)        DRUG        1.000  1.000  1.000
+tagger (no lexicon)        CONDITION   1.000  1.000  1.000
+tagger (no lexicon)        SYMPTOM     1.000  1.000  1.000
+tagger (no lexicon)        ALL         1.000  1.000  1.000
+
+Drug recall, seen vs never-seen drug names
+  dictionary                 seen 1.000   unseen 0.000
+  tagger (with lexicon)      seen 1.000   unseen 0.000
+  tagger (no lexicon)        seen 1.000   unseen 1.000
+
+Negation rule accuracy on symptom mentions: 1.000 (1800/1800)
+
+Self-check passed: tagger without the lexicon finds drugs the dictionary has never seen; the lexicon feature is a shortcut that hurts; regex v2 fixes v1's misses.
+Note: notes are templated, so scores near 1.0 are a ceiling effect of the synthetic text, not a real-world claim.

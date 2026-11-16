@@ -1,0 +1,3 @@
+Saved: t6_side_by_side.png, t6_histogram.png, t6_segmentation_overlay.png
+
+T6 self-check passed.

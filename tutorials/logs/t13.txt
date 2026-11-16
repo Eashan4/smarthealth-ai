@@ -1,0 +1,17 @@
+569 patients x 30 features; 212 malignant, 357 benign
+
+Redundancy: 21 of 435 feature pairs have |r| > 0.9 (e.g. radius vs perimeter r = 0.998)
+PCA: PC1 44.3%, PC2 19.0%; 7 components keep 90% of the variance, 10 keep 95% (from 30)
+PC1 is made of: mean concave points (+0.26), mean concavity (+0.26), worst concave points (+0.25), mean compactness (+0.24), worst perimeter (+0.24)
+
+method              5-NN acc  silhouette  trustworthiness
+PCA                    0.940       0.438            0.871
+LDA (supervised)       0.975       0.678            0.700
+t-SNE                  0.960       0.492            0.949
+Isomap                 0.953       0.466            0.878
+(LDA uses the labels, so its separation is an upper bound, not a fair unsupervised score; t-SNE/Isomap kNN scores are descriptive: the embedding was fit on all points.)
+
+Logistic regression, 5-fold CV: all 30 features 0.981
+  k=1: 0.916  k=2: 0.951  k=3: 0.946  k=5: 0.970  k=7: 0.972  k=10: 0.981  k=15: 0.977  k=20: 0.977  k=30: 0.981
+
+Self-check passed: 30 features compress to ~7-10 components with no meaningful loss in accuracy.

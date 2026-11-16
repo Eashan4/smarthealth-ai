@@ -1,0 +1,9 @@
+Enhancement: saved histogram-equalized and CLAHE images.
+Restoration: PSNR noisy=20.10 dB -> denoised=25.32 dB
+Segmentation: Otsu mask covers 3.2% of pixels as foreground
+Compression (quality -> size_kb, PSNR dB):
+  q=10: 5.2 KB, 37.22 dB
+  q=50: 10.3 KB, 46.82 dB
+  q=90: 23.8 KB, 54.32 dB
+
+T4 self-check passed.
