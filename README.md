@@ -135,6 +135,10 @@ smarthealth-ai/
 
 Trained on the [BITS-2 dataset](https://doi.org/10.5281/zenodo.10013090) (same MPU6500+MAX30102 sensor pair as this project's hardware): the deployed 1D CNN reaches **85.1% accuracy / 89.6% fall recall** on a held-out, subject-disjoint test split, beating an LSTM comparison model on every measured axis. `Standing` and `Tremor` are not trained in v1 (no matching data in BITS-2) — see [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md) sec 5/16/21 for the full, honest accounting of what is and isn't covered.
 
+## Final deliverables
+
+The report, A3 poster, project deck and tutorials deck are in [`final/`](final/README.md); the fifteen coursework tutorials (T1 to T15) are in [`tutorials/`](tutorials/README.md) and run with `python tutorials/run_all.py`. The assembled prototype (NodeMCU ESP8266 + MPU-6050 + MAX30102, USB serial) is documented in the report, Section 3.
+
 ## Getting started
 
 ```bash
