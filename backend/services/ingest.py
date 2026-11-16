@@ -25,6 +25,7 @@ def process_sample(conn, clean: dict) -> dict:
     cnn = live_state.get_stream(dev).push_sample(sample)    # event-triggered CNN: supporting fall evidence only
     if cnn is not None:
         engine.note_cnn(dev, cnn)
+        live_state.set_last_models(dev, cnn)
     result = motion.push(sample)                            # continuous rules: result ~1 Hz (at once on a fall)
 
     response = {"status": "ok", "windowed": result is not None}
