@@ -4,11 +4,15 @@ Used by both transports: WiFi HTTP (routes/sensor_routes.py) and USB serial (ser
 from __future__ import annotations
 
 from backend.database import db
-from backend.services import live_state
+from backend.services import calibration, imu_live, live_state
 
 
 def process_sample(conn, clean: dict) -> dict:
     """Store + infer + decide for one validated sample; returns the response dict."""
+    raw = clean["imu"]
+    calibration.feed(clean["device_id"], raw)                         # raw sample -> running calibration
+    clean["imu"] = calibration.apply(clean["device_id"], raw)         # everything below sees calibrated gyro
+    imu_live.push(clean["device_id"], clean["imu"], raw)
     db.insert_reading(conn, clean["device_id"], clean["timestamp"], clean["imu"],
                        clean["heart_rate"], clean["spo2"])
 
@@ -27,6 +31,8 @@ def process_sample(conn, clean: dict) -> dict:
     if result is None:
         return response
 
+    g = calibration.status(dev).get("gravity")              # calibrated rest gravity -> Sitting/Standing/Lying tilt
+    motion.rest_gravity = [g["x"], g["y"], g["z"]] if g else None
     decision = engine.evaluate(dev, result)
     db.insert_prediction(conn, dev, clean["timestamp"], decision["activity"], result["confidence"],
                          decision["fall_probability"], None, "rules+CNN")
