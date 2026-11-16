@@ -14,6 +14,8 @@ from ml.inference.tremor import TremorDetector
 from .decision_engine import DecisionEngine
 
 _predictor: ActivityPredictor | None = None
+_comparison: ActivityPredictor | None = None
+_last_models: dict[str, dict] = {}
 _streams: dict[str, DeviceInferenceStream] = {}
 _decision_engine = DecisionEngine()
 _alert_active: dict[str, bool] = {}
@@ -28,9 +30,30 @@ def get_predictor() -> ActivityPredictor:
     return _predictor
 
 
+def get_comparison_predictor() -> ActivityPredictor | None:
+    """The LSTM, loaded once; None if its weights are missing (the CNN alone still works)."""
+    global _comparison
+    if _comparison is None:
+        try:
+            _comparison = ActivityPredictor(which="comparison")
+        except (OSError, KeyError, NotImplementedError):
+            return None
+    return _comparison
+
+
+def set_last_models(device_id: str, cnn: dict) -> None:
+    """Remember the latest motion event as classified by both models, for the dashboard comparison."""
+    slim = lambda r: None if r is None else {k: r[k] for k in ("activity", "confidence", "fall_probability", "latency_ms", "model_name")}
+    _last_models[device_id] = {"at": cnn["inferred_at"], "cnn": slim(cnn), "lstm": slim(cnn.get("comparison"))}
+
+
+def get_last_models(device_id: str) -> dict | None:
+    return _last_models.get(device_id)
+
+
 def get_stream(device_id: str) -> DeviceInferenceStream:
     if device_id not in _streams:
-        _streams[device_id] = DeviceInferenceStream(get_predictor())
+        _streams[device_id] = DeviceInferenceStream(get_predictor(), get_comparison_predictor())
     return _streams[device_id]
 
 
@@ -71,5 +94,6 @@ def reset_device(device_id: str) -> None:
     _streams.pop(device_id, None)
     _tremor.pop(device_id, None)
     _motion.pop(device_id, None)
+    _last_models.pop(device_id, None)
     _decision_engine.reset(device_id)
     _alert_active[device_id] = False

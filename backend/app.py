@@ -9,6 +9,7 @@ from flask import Flask, send_from_directory
 from backend.database.db import init_db
 from backend.routes.api_routes import api_bp
 from backend.routes.calibration_routes import calibration_bp
+from backend.routes.model_routes import model_bp
 from backend.routes.sensor_routes import sensor_bp
 from backend.routes.serial_routes import serial_bp
 
@@ -27,6 +28,7 @@ def create_app() -> Flask:
     app.register_blueprint(api_bp)
     app.register_blueprint(serial_bp)
     app.register_blueprint(calibration_bp)
+    app.register_blueprint(model_bp)
 
     @app.route("/")
     def dashboard_index():
