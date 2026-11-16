@@ -22,7 +22,7 @@ import serial
 from serial.tools import list_ports
 
 from backend.database import db
-from backend.services import live_state
+from backend.services import imu_live, live_state
 from backend.services.ingest import process_sample
 from backend.services.validation import PayloadValidationError, validate_sensor_payload
 
@@ -120,6 +120,7 @@ class SerialBridge:
             self.port, self.device_id = port, device_id
             self.connected_at = time.time()
             live_state.reset_device(device_id)  # drop any stale rolling window
+            imu_live.reset(device_id)
             self._stop.clear()
             self._thread = threading.Thread(target=self._run, args=(ser, device_id), daemon=True)
             self._thread.start()
