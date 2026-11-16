@@ -1,0 +1,122 @@
+[
+ [
+  "resting, sensor noise only",
+  false,
+  false,
+  {
+   "freq_hz": 7.999999999999998,
+   "amplitude": 0.02231497540851773,
+   "band_ratio": 0.31373928414712593,
+   "peak_ratio": 2.1370994803639287,
+   "low_rms": 0.01581158321591389
+  }
+ ],
+ [
+  "5 Hz tremor, 0.6 m/s2",
+  true,
+  true,
+  {
+   "freq_hz": 4.999999999999999,
+   "amplitude": 0.4254615570544556,
+   "band_ratio": 0.994056543032375,
+   "peak_ratio": 3153.126880840385,
+   "low_rms": 0.010497937630373514
+  }
+ ],
+ [
+  "4 Hz tremor, 1.5 m/s2",
+  true,
+  true,
+  {
+   "freq_hz": 3.999999999999999,
+   "amplitude": 1.0643459222237475,
+   "band_ratio": 0.9990214344033749,
+   "peak_ratio": 18435.1427604144,
+   "low_rms": 0.014078746989571832
+  }
+ ],
+ [
+  "6.5 Hz tremor, 0.4 m/s2",
+  true,
+  true,
+  {
+   "freq_hz": 6.333333333333332,
+   "amplitude": 0.28237713348365523,
+   "band_ratio": 0.9897057614229975,
+   "peak_ratio": 1437.918472040667,
+   "low_rms": 0.015740982606269563
+  }
+ ],
+ [
+  "tremor + slow arm drift",
+  true,
+  true,
+  {
+   "freq_hz": 4.999999999999999,
+   "amplitude": 0.4207492589383923,
+   "band_ratio": 0.6064537442028323,
+   "peak_ratio": 3050.0477456557114,
+   "low_rms": 0.33791556100058007
+  }
+ ],
+ [
+  "walking (1.9 Hz + harmonics)",
+  false,
+  false,
+  {
+   "freq_hz": 3.666666666666666,
+   "amplitude": 1.5748035456958098,
+   "band_ratio": 0.16572019639563337,
+   "peak_ratio": 20553.59573295252,
+   "low_rms": 3.532685450301836
+  }
+ ],
+ [
+  "running (2.8 Hz + harmonics)",
+  false,
+  false,
+  {
+   "freq_hz": 5.666666666666665,
+   "amplitude": 2.9259303197693938,
+   "band_ratio": 0.14772517455345346,
+   "peak_ratio": 101584.49285708333,
+   "low_rms": 1.3353816951606021
+  }
+ ],
+ [
+  "slow arm movement 0.5 Hz",
+  false,
+  false,
+  {
+   "freq_hz": 4.999999999999999,
+   "amplitude": 0.021925295391100105,
+   "band_ratio": 0.00047460353579849236,
+   "peak_ratio": 2.0163927857673847,
+   "low_rms": 1.005752720036425
+  }
+ ],
+ [
+  "11 Hz vibration (above band)",
+  false,
+  false,
+  {
+   "freq_hz": 3.666666666666666,
+   "amplitude": 0.023159677648503425,
+   "band_ratio": 0.0029611248090209512,
+   "peak_ratio": 3.0065645762015625,
+   "low_rms": 0.013879663118417065
+  }
+ ],
+ [
+  "tiny 5 Hz (below noise floor)",
+  false,
+  false,
+  {
+   "freq_hz": 4.999999999999999,
+   "amplitude": 0.07437565855046625,
+   "band_ratio": 0.8082140130506773,
+   "peak_ratio": 85.29593949290177,
+   "low_rms": 0.017053197847476536
+  }
+ ]
+]
