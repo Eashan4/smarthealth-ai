@@ -1,0 +1,3 @@
+82-year-old female presents with thirst and fatigue for 8 days. Chronic illness, on regular follow-up. Denies fever. Also history of stroke. BP 152/64, HR 68. Continue alendronate 5 mg every 8 hours. Referred for further investigation.
+
+TextRank: fever, fatigue, thirst, stroke, female, alendronate

@@ -1,0 +1,55 @@
+{
+ "ranking": {
+  "random": {
+   "P@10": 0.028,
+   "MAP": 0.025,
+   "nDCG@10": 0.024
+  },
+  "TF-IDF cosine": {
+   "P@10": 0.761,
+   "MAP": 0.644,
+   "nDCG@10": 0.743
+  },
+  "BM25": {
+   "P@10": 0.85,
+   "MAP": 0.677,
+   "nDCG@10": 0.827
+  }
+ },
+ "wsd": {
+  "most frequent sense": 0.5,
+  "simplified Lesk": 0.5841666666666666,
+  "Naive Bayes (5-fold CV)": 0.9866666666666667
+ },
+ "wsd_per_term": {
+  "RA": {
+   "lesk": 0.5583333333333333,
+   "nb": 0.9875
+  },
+  "MS": {
+   "lesk": 0.6625,
+   "nb": 1.0
+  },
+  "PT": {
+   "lesk": 0.6083333333333333,
+   "nb": 0.9916666666666666
+  },
+  "cold": {
+   "lesk": 0.5,
+   "nb": 0.9875
+  },
+  "discharge": {
+   "lesk": 0.5916666666666667,
+   "nb": 0.9666666666666666
+  }
+ },
+ "n_queries": 36,
+ "textrank_note0": [
+  "fever",
+  "fatigue",
+  "thirst",
+  "stroke",
+  "female",
+  "alendronate"
+ ]
+}

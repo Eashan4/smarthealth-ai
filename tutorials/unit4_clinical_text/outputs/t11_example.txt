@@ -1,0 +1,5 @@
+48-year-old male presents with fatigue and heartburn for 11 days. Chronic illness, on regular follow-up. Denies headache. Also history of osteoarthritis. BP 118/88, HR 102. Started on rifaximin 500 mg once daily. Admit for observation.
+
+dictionary: [('fatigue', 'SYMPTOM'), ('headache', 'SYMPTOM'), ('heartburn', 'SYMPTOM'), ('osteoarthritis', 'CONDITION')]
+tagger:     [('fatigue', 'SYMPTOM'), ('headache', 'SYMPTOM'), ('heartburn', 'SYMPTOM'), ('osteoarthritis', 'CONDITION')]
+gold:       [('fatigue', 'SYMPTOM'), ('headache', 'SYMPTOM'), ('heartburn', 'SYMPTOM'), ('osteoarthritis', 'CONDITION'), ('rifaximin', 'DRUG')]
